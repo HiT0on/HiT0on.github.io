@@ -143,6 +143,56 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-从SQL注入到内网漫t" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="从SQL注入到内网漫游"><a href="#从SQL注入到内网漫游" class="headerlink" title="从SQL注入到内网漫游"></a>从SQL注入到内网漫游</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在一次渗透实战中，发现了一个注入点，最后成功的漫游了内网。</p>
+<h3 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h3><p>在渗透中遇到一个站点，顺手测试了一下，在搜索框随便输入了一个字符加个单引号直接报错了，差不多可以确认这里存在注入了。一般这种站安全性极差，测试了下其他地方，在一个登录框处又发现一个注入。<br><img src="https://i.imgur.com/ssn6B5g.png" alt=""><br>直接丢到sqlmap里面跑就行了。这里就不重新跑了，贴sqlmap的日志图出来。<img src="https://i.imgur.com/jHZdQHO.png" alt=""><br>从上面的图来看，其实我们并没有跑出password列，因为这是access数据库，sqlmap是基于暴力破解的形式，我们可以看看他的列名的特点，是admin_xxx,那么我们是不是可以猜测一下password列名的形式会不会是admin_password/admin_passwd/admin_pw 或者其他。又或者不管有没有注出来password我们先用注出来的admin账户进行暴力破解。这里我两者都试了，最后通过后者进入的。好了成功进入后台，找上传点。折腾了一番终于在一个比较隐蔽的地方找到了上传点。上传，成功拿到shell。<br><img src="https://i.imgur.com/oLUGvSA.png" alt=""><br><img src="https://i.imgur.com/OLX5o42.png" alt=""><br>补丁打满，想提权基本是不可能了。转换思路，查找敏感信息，因为这是一个大目标，提权不是必须不一定非得陷在这里。经过一番查找，翻到了数据库配置文件成功进入数据库，在这里查看到了一些管理员账号和密码，顺便说一下password列名是admin_pw,记录下来。这个站折腾的差不多了，手上的账号密码得让他充分发挥作用。这里可以用Googlehack语法去查找这个目标的其他站点例如<code>site:xxx.com 系统</code>也可以用扫描C段，推荐一个工具masscan，号称6分钟可以扫遍全网。确实很快，我们用它把这个站的C段全扫一遍，因为之前已经用正向代理把它的C段445全扫了一遍没啥收获，所以就直接选择扫描http服务了。使用命令<code>masscan -p 80, 8080 ip --rate=10000</code>即可rate参数代表的是发包速率。下面是截取的部分C段网站。<br><img src="https://i.imgur.com/SeR26Yn.png" alt=""><br>一个个的过一遍，有登录功能的话，用获取到的密码去尝试登录一下。这里一定要有耐心，不要放过一个可能存在问题的点。折腾了几个小时后，找到一个可以登录的站，而且是非常关键的那种。直接链接了内网各种系统。粗略看了下大概有六七十个吧，包括很多敏感的系统，都是可以直接链接进去的。<img src="https://i.imgur.com/4ek7jVb.png" alt=""><br>随便截取几个看下吧<br>个人邮件：<br><img src="https://i.imgur.com/UPVA1w3.png" alt=""><br>内部通讯录：<br><img src="https://i.imgur.com/NlWnafv.png" alt=""><br>财务：<br><img src="https://i.imgur.com/lqhnu8R.png" alt=""><br>还有很多就不一一截取了。<br>内网系统基本都很脆弱，本人没有做深入的测试。</p>
+<h3 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h3><p>可能大家会觉得，一路看下来顺风顺水，其实哪有那么容易，我都不知道花了多久才找到这么一个站。很多目标往往都是从一个非常小的地方慢慢的被击破，非常需要耐心和细心。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/10/26/从SQL注入到内网漫t/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-PHP代码审计之piwigo SQL injection（in_array()函数缺陷）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
