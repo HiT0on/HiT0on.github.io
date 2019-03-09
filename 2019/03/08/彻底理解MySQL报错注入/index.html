@@ -6,18 +6,29 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://yoursite.com">
-  <title>Archives | Hit0n&#39;s bolg</title>
+  <title>彻底理解MySQL报错注入 | Hit0n&#39;s bolg</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="cyber,apt,web security,ctf">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Hit0n&#39;s bolg">
-<meta property="og:url" content="http://yoursite.com/archives/index.html">
+  <meta name="description" content="0x01 前言太久没写博客了，学习web安全一年半多了。发现好多知识平时用的太少导致学了很快就忘记了。最近打算重新梳理一下OWASP TOP 10 上的漏洞类型，深入理解每个漏洞的原理，又是一波回炉重造。">
+<meta name="keywords" content="知识点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="彻底理解MySQL报错注入">
+<meta property="og:url" content="http://yoursite.com/2019/03/08/彻底理解MySQL报错注入/index.html">
 <meta property="og:site_name" content="Hit0n&#39;s bolg">
-<meta property="og:description" content="cyber,apt,web security,ctf">
+<meta property="og:description" content="0x01 前言太久没写博客了，学习web安全一年半多了。发现好多知识平时用的太少导致学了很快就忘记了。最近打算重新梳理一下OWASP TOP 10 上的漏洞类型，深入理解每个漏洞的原理，又是一波回炉重造。">
 <meta property="og:locale" content="zh">
+<meta property="og:image" content="https://i.imgur.com/2ioq6j2.png">
+<meta property="og:image" content="https://i.imgur.com/upAsbIB.png">
+<meta property="og:image" content="https://i.imgur.com/HZXZvUz.png">
+<meta property="og:image" content="https://i.imgur.com/ucrMs4f.png">
+<meta property="og:image" content="https://i.imgur.com/rBI81c8.png">
+<meta property="og:image" content="https://i.imgur.com/ZYzJuxS.png">
+<meta property="og:image" content="https://i.imgur.com/AbOBLHM.png">
+<meta property="og:image" content="http://www.myhack58.com/Article/UploadPic/2016-4/201641112404189.png">
+<meta property="og:updated_time" content="2019-03-09T07:03:42.938Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Hit0n&#39;s bolg">
-<meta name="twitter:description" content="cyber,apt,web security,ctf">
+<meta name="twitter:title" content="彻底理解MySQL报错注入">
+<meta name="twitter:description" content="0x01 前言太久没写博客了，学习web安全一年半多了。发现好多知识平时用的太少导致学了很快就忘记了。最近打算重新梳理一下OWASP TOP 10 上的漏洞类型，深入理解每个漏洞的原理，又是一波回炉重造。">
+<meta name="twitter:image" content="https://i.imgur.com/2ioq6j2.png">
   
     <link rel="alternative" href="/atom.xml" title="Hit0n&#39;s bolg" type="application/atom+xml">
   
@@ -141,36 +152,88 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-彻底理解MySQL报错注入" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2019" class="archive-year">2019</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2019/03/08/彻底理解MySQL报错注入/" class="archive-article-date">
-  	<time datetime="2019-03-08T14:36:07.061Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-08</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2019/03/08/彻底理解MySQL报错注入/">彻底理解MySQL报错注入</a>
+    <h1 class="article-title" itemprop="name">
+      彻底理解MySQL报错注入
     </h1>
   
 
-        <div class="article-info info-on-right">
+        
+        <a href="/2019/03/08/彻底理解MySQL报错注入/" class="archive-article-date">
+  	<time datetime="2019-03-08T14:36:07.061Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2019-03-08</time>
+</a>
+		
+          <div style="margin-top:10px;">
+    <span class="post-time">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-keyboard-o"></i>
+        <span class="post-meta-item-text">  字数统计: </span>
+        <span class="post-count">1k字</span>
+      </span>
+    </span>
+
+    <span class="post-time">
+      &nbsp; | &nbsp;
+      <span class="post-meta-item-icon">
+        <i class="fa fa-hourglass-half"></i>
+        <span class="post-meta-item-text">  阅读时长: </span>
+        <span class="post-count">4分</span>
+      </span>
+    </span>
+</div>
           
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h3 id="0x01-前言"><a href="#0x01-前言" class="headerlink" title="0x01 前言"></a>0x01 前言</h3><p>太久没写博客了，学习web安全一年半多了。发现好多知识平时用的太少导致学了很快就忘记了。最近打算重新梳理一下OWASP TOP 10 上的漏洞类型，深入理解每个漏洞的原理，又是一波回炉重造。<br><a id="more"></a></p>
+<h3 id="0x02-常用报错语句"><a href="#0x02-常用报错语句" class="headerlink" title="0x02 常用报错语句"></a>0x02 常用报错语句</h3><p>参考《代码审计：企业级Web代码安全架构》常用的报错语句有<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">1.floor()</span><br><span class="line"></span><br><span class="line">select * from test where id=1 and (select 1 from (select count(*),concat(user(),floor(rand(0)*2))x from information_schema.tables group by x)a);</span><br><span class="line"></span><br><span class="line">2.extractvalue()</span><br><span class="line"></span><br><span class="line">select * from test where id=1 and (extractvalue(1,concat(0x7e,(select user()),0x7e)));</span><br><span class="line"></span><br><span class="line">3.updatexml()</span><br><span class="line"></span><br><span class="line">select * from test where id=1 and (updatexml(1,concat(0x7e,(select user()),0x7e),1));</span><br><span class="line"></span><br><span class="line">4.exp()</span><br><span class="line"></span><br><span class="line">select * from test where id=1 and exp(~(select * from(select user())a));</span><br></pre></td></tr></table></figure></p>
+<p>本文重点讲最经典的<code>floor()</code>报错。</p>
+<h3 id="0x03-原理分析"><a href="#0x03-原理分析" class="headerlink" title="0x03 原理分析"></a>0x03 原理分析</h3><p>先来看一下输入语句<code>select * from test where id=1 and (select 1 from (select count(*),concat(user(),floor(rand(0)*2))x from information_schema.tables group by x)a);</code>产生的效果；<br><img src="https://i.imgur.com/2ioq6j2.png" alt=""><br>成功显示出当前数据库用户。<br>对上面的语句进行简化得到<code>select count(*) from tsafe group by floor(rand(0)*2);</code>执行发现报错。<br><img src="https://i.imgur.com/upAsbIB.png" alt=""><br>当前表一共有8条记录，删掉6条后，在执行上述语句发现不报错。<br><img src="https://i.imgur.com/HZXZvUz.png" alt=""><br>再增加一条记录，执行上述语句发现报错。<br><img src="https://i.imgur.com/ucrMs4f.png" alt=""><br>再来看一下<code>select count(*) from tsafe group by floor(rand()*2);</code>发现并没有报错。<br><img src="https://i.imgur.com/rBI81c8.png" alt=""></p>
+<p>rand()函数会随机产生[0,1)之间的浮点数。</p>
+<p>rand()函数可以自己设置随机种子,即rand(N),这个时候产生的随机数是伪随机数.也就是我们多次生成的是相同的。</p>
+<p>floor(N)函数会返回一个小于或等于传入参数N的最大整数(相当于截断小数部分)</p>
+<p>来看一下rand()不设置随机种子的情况。<br><img src="https://i.imgur.com/ZYzJuxS.png" alt=""><br>可以看出来,连续执行两次的结果是完全不同的。再来看一下设置随机种子后,rand函数的值。<br><img src="https://i.imgur.com/AbOBLHM.png" alt=""><br>多试几次前六位的值都是011011。<br>concat()是字符串连接函数。那么问题来了，为啥会报错呢？<br>mysql在遇到count(*)语句时实际上会建立一个虚拟表，类似于下图<img src="http://www.myhack58.com/Article/UploadPic/2016-4/201641112404189.png" alt=""></p>
+<p>如果key存在的话就+1， 不存在的话就新建一个key。<br>重点来了，<strong>mysql查询的时候如果使用rand()的话，该值会被计算多次，那这个“被计算多次”到底是什么意思，就是在使用group by的时候，floor(rand(0)*2)会被执行一次，如果虚表不存在记录，插入虚表的时候会再被执行一次。</strong><br>我们知道<code>floor(rand(0)*2)</code>的前六位值是011011，那么在执行<code>select count(*) from TSafe group by floor(rand(0)*2)</code>时首先会建立一个空虚拟表，然后获取第一条记录发现结果为0，虚拟表中并不存在，此时floor(rand(0)<em>2)会被在计算一次这时候结果为1，插入虚拟表，第一条记录查询完毕。<br>查询第二条记录，再次计算floor(rand(0)\</em>2)，发现结果为1，虚拟表中存在，count(*)直接加1，floor（rand(0)*2）不在进行二次计算，第二条记录查询完毕。<br>查询第三条记录，再次计算floor(rand(0)*2)，发现结果为0，查询虚表，发现键值没有0，则数据库尝试插入一条新的数据，在插入数据时floor(rand(0)*2)被再次计算，作为虚表的主键，其值为1，然而1这个主键已经存在于虚拟表中，而新计算的值也为1(主键键值必须唯一)，所以插入的时候就直接报错了。</p>
+<p>以上就是报错注入的原理了，还可以直接去手动分析floor(rand(1)*2)、floor(rand(2)*2)、floor(rand(3)*2)等等，都是一样的道理。<br>其他的报错语句也都差不多，网上很多现成的分析文章</p>
+<h3 id="0x04后话"><a href="#0x04后话" class="headerlink" title="0x04后话"></a>0x04后话</h3><p>还是要认真分析啊，多动手多用</p>
+<p>参考</p>
+<p><a href="http://https://www.cnblogs.com/xdans/p/5412468.html" target="_blank" rel="noopener">http://https://www.cnblogs.com/xdans/p/5412468.html</a><br><a href="http://https://www.cnblogs.com/Triomphe/p/9489639.html" target="_blank" rel="noopener">http://https://www.cnblogs.com/Triomphe/p/9489639.html</a><br><a href="https://xz.aliyun.com/t/253" target="_blank" rel="noopener">https://xz.aliyun.com/t/253</a><br><a href="https://www.cnblogs.com/wocalieshenmegui/p/5917967.html" target="_blank" rel="noopener">https://www.cnblogs.com/wocalieshenmegui/p/5917967.html</a></p>
+
+      
+
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
+        </div>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
 	<div class="article-tag tagcloud">
 		<i class="icon-price-tags icon"></i>
 		<ul class="article-tag-list">
@@ -182,383 +245,106 @@
 		</ul>
 	</div>
 
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
       
-        </div></section>
+
       
+
       
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2018" class="archive-year">2018</a>
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
         </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/12/CmsExploit_framework编写（二）/" class="archive-article-date">
-  	<time datetime="2018-11-12T03:12:42.271Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-12</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/12/CmsExploit_framework编写（二）/">CmsExploit_framework编写（二）</a>
-    </h1>
-  
+      </div>
+    </span>
+  </div>
+</div>
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://yoursite.com/2019/03/08/彻底理解MySQL报错注入/" alt="微信分享二维码">
+    </div>
+</div>
 
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/11/CmsExploit_framework编写（一）/" class="archive-article-date">
-  	<time datetime="2018-11-11T09:17:39.378Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-11</time>
-</a>
+<nav id="article-nav">
+  
+  
+    <a href="/2018/11/12/CmsExploit_framework编写（二）/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">CmsExploit_framework编写（二）</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/11/CmsExploit_framework编写（一）/">CmsExploit_Framework编写（一）</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/11/07/记一次曲折的Linux提权/" class="archive-article-date">
-  	<time datetime="2018-11-06T16:00:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-11-07</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/11/07/记一次曲折的Linux提权/">记一次曲折的Linux提权</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">提权</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/28/python url采集 + exp批量测试/" class="archive-article-date">
-  	<time datetime="2018-10-28T15:19:27.430Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-28</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/28/python url采集 + exp批量测试/">python url采集 + exp批量测试</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color2">python</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/26/从SQL注入到内网漫t/" class="archive-article-date">
-  	<time datetime="2018-10-26T03:11:53.777Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-26</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/26/从SQL注入到内网漫t/">从SQL注入到内网漫游</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/" class="archive-article-date">
-  	<time datetime="2018-10-25T10:34:18.648Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-10-25</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/10/25/PHP代码审计之piwigo SQL injection（in_array()函数缺陷）/">PHP代码审计之piwigo SQL injection（in_array()函数缺陷）</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">代码审计</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/21/记一次实战渗透过程中的知识点总结/" class="archive-article-date">
-  	<time datetime="2018-09-21T02:30:01.352Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/21/记一次实战渗透过程中的知识点总结/">记一次实战渗透过程中的知识点总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/09/06/记一次渗透测试实战/" class="archive-article-date">
-  	<time datetime="2018-09-06T05:52:29.881Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-09-06</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/09/06/记一次渗透测试实战/">记一次渗透测试实战</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">实战</a>
-        		</li>
-      		 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">内网</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2018/08/21/getshell总结/" class="archive-article-date">
-  	<time datetime="2018-08-21T04:04:53.792Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2018-08-21</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2018/08/21/getshell总结/">getshell总结</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-	<div class="article-tag tagcloud">
-		<i class="icon-price-tags icon"></i>
-		<ul class="article-tag-list">
-			 
-        		<li class="article-tag-list-item">
-        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color3">总结</a>
-        		</li>
-      		
-		</ul>
-	</div>
-
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -581,8 +367,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
