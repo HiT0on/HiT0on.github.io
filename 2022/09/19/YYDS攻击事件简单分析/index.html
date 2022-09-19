@@ -206,7 +206,7 @@
 <h5 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h5><p>使用tenderly解析攻击hash 发现攻击合约主要是在调用这几个函数</p>
 <p><img src="/img/postimg/yyds/image-20220919171328338.png" alt="image-20220919171328338"></p>
 <p>分析相关代码发现，这几个函数在计算奖励数量时，都调用了getPriceOfUSDT()，而getPriceOfUSDT() 只是简单的通过计算pair 中两个代币余额相除获取价格</p>
-<p>![image-20220919171834361/img/postimg/yyds/image-20220919171834361.png)</p>
+<p><img src="/img/postimg/yyds/image-20220919171834361.png" alt="image-20220919171834361"></p>
 <p>这很容易被操控，因此攻击者先通过闪电贷 贷走了pair 里的usdt 此时price变成一个非常小的值，yydsAmount 除以一个非常小的值就会变得很大，攻击者通过调用这三个方法获得了较多的yyds代币，最后归还闪电贷（通过计算还了u和yyds 代币）最后获利70w$离场。</p>
 <h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://dashboard.tenderly.co/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356">https://dashboard.tenderly.co/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356</a></p>
 <p><a target="_blank" rel="noopener" href="https://tools.blocksec.com/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356">https://tools.blocksec.com/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356</a></p>
