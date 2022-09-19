@@ -13,6 +13,11 @@
     
 
     
+        <meta name="description" content="分析攻击者地址：0xed850799cf22b66cb4911539425f8a41423d0933
+攻击合约：0x586770e9643be4bda002f78bfd205546a6f492b3
+被攻击合约：0x970A76aEa6a0D531096b566340C0de9B027dd39D
+攻击"/>
+    
 
     <!--Author-->
     
@@ -21,10 +26,15 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="d1rrick&#39;s blog"/>
+        <meta property="og:title" content="YYDS攻击事件简单分析"/>
     
 
     <!--Open Graph Description-->
+    
+        <meta property="og:description" content="分析攻击者地址：0xed850799cf22b66cb4911539425f8a41423d0933
+攻击合约：0x586770e9643be4bda002f78bfd205546a6f492b3
+被攻击合约：0x970A76aEa6a0D531096b566340C0de9B027dd39D
+攻击"/>
     
 
     <!--Open Graph Site Name-->
@@ -32,7 +42,7 @@
 
     <!--Type page-->
     
-        <meta property="og:type" content="website"/>
+        <meta property="og:type" content="article"/>
     
 
     <!--Page Cover-->
@@ -51,7 +61,7 @@
 
     <!-- Title -->
     
-    <title>Archives: 2022 - d1rrick&#39;s blog</title>
+    <title>YYDS攻击事件简单分析 - d1rrick&#39;s blog</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
@@ -139,75 +149,84 @@
 </nav>
 
     <!-- Main Content -->
-    
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
 
-<!-- Page Header -->
-<!-- Set your background image for this header in the theme's configuration: index_cover -->
 <header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-                <div class="site-heading">
-                    <h1>2022</h1>
+                <div class="post-heading">
+                    <h1>YYDS攻击事件简单分析</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2022-09-19
+                        
+                    </span>
                 </div>
             </div>
         </div>
     </div>
 </header>
 
-<!-- Main Content -->
-<div class="container">
-    <div class="row">
-        <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/区块链安全/">#区块链安全</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
             
-                <div class="post-preview">
-    <a href="/2022/09/19/YYDS攻击事件简单分析/">
-        <h1 class="post-title archive">
-            YYDS攻击事件简单分析
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-09-19
-    </p>
-</div>
+
+            <!-- Gallery -->
             
-                <div class="post-preview">
-    <a href="/2022/09/18/DPC攻击事件分析与复现/">
-        <h1 class="post-title archive">
-            dpc攻击事件分析与复现
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-09-18
-    </p>
-</div>
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="分析"><a href="#分析" class="headerlink" title="分析"></a>分析</h4><p>攻击者地址：0xed850799cf22b66cb4911539425f8a41423d0933</p>
+<p>攻击合约：0x586770e9643be4bda002f78bfd205546a6f492b3</p>
+<p>被攻击合约：0x970A76aEa6a0D531096b566340C0de9B027dd39D</p>
+<p>攻击hash：<a target="_blank" rel="noopener" href="https://bscscan.com/tx/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356">https://bscscan.com/tx/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356</a></p>
+<h5 id="漏洞成因"><a href="#漏洞成因" class="headerlink" title="漏洞成因"></a>漏洞成因</h5><p>使用tenderly解析攻击hash 发现攻击合约主要是在调用这几个函数</p>
+<p><img src="/img/postimg/yyds/image-20220919171328338.png" alt="image-20220919171328338"></p>
+<p>分析相关代码发现，这几个函数在计算奖励数量时，都调用了getPriceOfUSDT()，而getPriceOfUSDT() 只是简单的通过计算pair 中两个代币余额相除获取价格</p>
+<p>![image-20220919171834361/img/postimg/yyds/image-20220919171834361.png)</p>
+<p>这很容易被操控，因此攻击者先通过闪电贷 贷走了pair 里的usdt 此时price变成一个非常小的值，yydsAmount 除以一个非常小的值就会变得很大，攻击者通过调用这三个方法获得了较多的yyds代币，最后归还闪电贷（通过计算还了u和yyds 代币）最后获利70w$离场。</p>
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://dashboard.tenderly.co/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356">https://dashboard.tenderly.co/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356</a></p>
+<p><a target="_blank" rel="noopener" href="https://tools.blocksec.com/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356">https://tools.blocksec.com/tx/bsc/0x04a1f0d1694242515ecb14faa71053901f11a1286cd21c27fe5542f9eeb62356</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/SunWeb3Sec/DeFiHackLabs/blob/main/src/test/Yyds_exp.sol">https://github.com/SunWeb3Sec/DeFiHackLabs/blob/main/src/test/Yyds_exp.sol</a></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
             
-                <div class="post-preview">
-    <a href="/2022/09/09/zoompro 攻击事件分析与复现/">
-        <h1 class="post-title archive">
-            zoompro攻击事件分析与复现
-        </h1>
-    </a>
-    <p class="post-meta archive">
-        <!-- Date and Author -->
-        
-        2022-09-09
-    </p>
-</div>
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
             
-            <div class="archive-before-pagination"></div>
-            <ul class="pager">
-    
-    
-</ul>
         </div>
     </div>
-</div>
-
+</article>
 
     <!-- Footer -->
     <hr />
